@@ -61,6 +61,8 @@ int main(int, char** argv)
 	valorant::initialize(); //WSS callback handles ending of application to prevent infinite while loop
 
 	while (true) {
+		valorant::getPresence();
 		state.core->RunCallbacks();
+		std::this_thread::sleep_for(std::chrono::seconds(15));
 	}
 }

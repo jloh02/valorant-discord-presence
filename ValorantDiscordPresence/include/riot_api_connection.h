@@ -16,11 +16,8 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h"
 
-#include "ixwebsocket/IXNetSystem.h"
-#include "ixwebsocket/IXWebSocket.h"
-#include "ixwebsocket/IXUserAgent.h"
-
 namespace valorant {
 	inline std::map<std::string, std::string> credentials;
 	void initialize();
+	bool getPresence();
 }

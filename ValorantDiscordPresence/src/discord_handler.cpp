@@ -1,6 +1,6 @@
 #include "discord_handler.h"
 
-#define EMPTY_IMAGE std::string(128,'\0').c_str()
+#define EMPTY_IMAGE ""//std::string(128,'\0').c_str()
 
 namespace disc {
 
@@ -155,10 +155,9 @@ namespace disc {
 		state.activity->GetAssets().SetLargeImage(largeImg);
 
 		printActivity();
-		for (int i = 0; i < 3; i++) {
-			state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
-				std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
-				});
-		}
+		state.core->ActivityManager().ClearActivity([](discord::Result result) {});
+		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
+			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+		});
 	}
 }
