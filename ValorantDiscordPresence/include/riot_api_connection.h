@@ -20,4 +20,5 @@ namespace valorant {
 	inline std::map<std::string, std::string> credentials;
 	void initialize();
 	bool getPresence();
+	std::string getMatchID();
 }

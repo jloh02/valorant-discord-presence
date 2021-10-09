@@ -1,6 +1,7 @@
 #include "discord_handler.h"
 
-#define EMPTY_IMAGE ""//std::string(128,'\0').c_str()
+//#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
+//#define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
 
 namespace disc {
 
@@ -33,13 +34,21 @@ namespace disc {
 		state.activity->GetAssets().SetLargeText("");
 		state.activity->GetAssets().SetSmallText("");
 		state.activity->SetType(discord::ActivityType::Playing);
-		disc::updateActivity("", "Loading In...", NULL, NULL, EMPTY_IMAGE, "valorant_icon");
+		disc::updateActivity("", "Loading In...", NULL, NULL, "", "valorant_icon");
+
+		discord::Result cbRes = state.core->RunCallbacks();
+		if (cbRes != discord::Result::Ok) {
+			std::cout << "Discord not opened: " << static_cast<int>(cbRes) << std::endl;
+			exit(0);
+		}
 	}
 
 	void updateActivity(rapidjson::GenericArray<false, rapidjson::Value> presences) {
 		for (auto& a : presences) {
 			if (!strcmp(a["puuid"].GetString(), valorant::credentials["puuid"].c_str())) {
+#ifdef DEBUG_UPDATE_ACTIVITY
 				std::cout << base64_decode(a["private"].GetString()) << std::endl;
+#endif
 
 				rapidjson::Document doc;
 				doc.Parse(base64_decode(a["private"].GetString()).c_str());
@@ -50,12 +59,12 @@ namespace disc {
 				if (strlen(gameType.c_str()) == 0) gameType = "Custom";
 
 				if (doc["isIdle"].GetBool())
-					updateActivity("", "Idle", NULL, NULL, EMPTY_IMAGE, "valorant_icon");
+					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon");
 				else {
 					if (!strcmp(doc["sessionLoopState"].GetString(), "MENUS")) {
 						bool isQueue = doc["partyState"].GetString() == "MATCHMAKING";
 
-						if (isQueue && !strcmp(prevState.c_str(), "queue")) timeStart = std::time(0);
+						if (isQueue && strcmp(prevState.c_str(), "queue")) timeStart = std::time(0);
 						prevState = isQueue ? "queue" : "menu";
 
 						updateActivity(
@@ -65,7 +74,7 @@ namespace disc {
 							gameType.c_str(),
 							isQueue ? timeStart : NULL, 
 							NULL,
-							EMPTY_IMAGE,
+							"",
 							"valorant_icon"
 						);
 					}
@@ -75,29 +84,24 @@ namespace disc {
 						if(lastSlash != std::string::npos) map = map.substr();
 						std::string mapAsset(map);
 						mapAsset[0] = tolower(mapAsset[0]);
+
+#ifdef DEBUG_UPDATE_ACTIVITY
 						std::cout << map << std::endl;
+#endif
 
 						if (!strcmp(doc["sessionLoopState"].GetString(), "PREGAME")) {
-							if (!strcmp(prevState.c_str(), "select")) timeStart = std::time(0);
+							if (strcmp(prevState.c_str(), "select")) timeStart = std::time(0);
 							prevState = "select";
 
 							updateActivity("Agent Select", gameType.c_str(), timeStart, NULL, "valorant_icon", mapAsset.c_str());
 						}
 						else if (!strcmp(doc["sessionLoopState"].GetString(), "INGAME")) {
-							if (!strcmp(prevState.c_str(), "game")) timeStart = std::time(0);
+							if (strcmp(prevState.c_str(), "game")) timeStart = std::time(0);
 							prevState = "game";
 
 							if (!strcmp(map.c_str(), "Range") || map.empty())
 								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range");
 							else {
-								/*std::tm tim = {};
-								std::istringstream ss(doc["queueEntryTime"].GetString());
-								if (ss >> std::get_time(&tim, "%Y.%m.%d-%H.%M.%S")) {
-									time_t now = time(0);
-									localtime_s(&tim, &now);
-								}
-								//else: parsing failed*/
-
 								updateActivity(
 									std::format("{} ({} {})",
 										gameType,
@@ -146,6 +150,7 @@ namespace disc {
 		std::cout << buffer.GetString() << std::endl;
 	}
 
+	int printCount = 0;
 	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg) {
 		state.activity->SetState(actState);
 		state.activity->SetDetails(actDetails);
@@ -153,11 +158,17 @@ namespace disc {
 		state.activity->GetTimestamps().SetEnd(endT);
 		state.activity->GetAssets().SetSmallImage(smallImg);
 		state.activity->GetAssets().SetLargeImage(largeImg);
-
-		printActivity();
-		state.core->ActivityManager().ClearActivity([](discord::Result result) {});
+#ifdef DEBUG_ACTIVITY
+		if (!printCount--) {
+			printActivity();
+			printCount = 300;
+		}
+#endif
+		//state.core->ActivityManager().ClearActivity([](discord::Result result) {});
 		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
-			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+#ifdef DEBUG_ACTIVITY
+			if(printCount==300) std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+#endif
 		});
 	}
 }
