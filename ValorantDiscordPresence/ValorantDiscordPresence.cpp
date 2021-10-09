@@ -24,7 +24,6 @@ namespace
 
 int main(int, char** argv)
 {
-	disc::initialize();
 	startValorantApplication();
 	
 	/*
@@ -57,17 +56,24 @@ int main(int, char** argv)
 		});
 		*/
 	
-	
+
+	disc::initialize();
 	valorant::initialize();
 
 	std::signal(SIGINT, [](int) { interrupted = true; });
 
 	do {
-		if(!valorant::getPresence()) std::cout << "Error getting presence" << std::endl;
-		discord::Result cbRes = state.core->RunCallbacks();
-		if (cbRes != discord::Result::Ok) {
+		if (!valorant::getPresence()) std::cout << "Can't get presence\n"; //continue; //Unable to get presence
+		discord::Result cbRes = state.core->RunCallbacks(); 
+		if (cbRes != discord::Result::Ok) //Unable to set presence
 			std::cout << "Discord error: " << static_cast<int>(cbRes) << std::endl;
+		if (isValorantClosed()) {
+			std::cout << "Valorant Application Closed\n";
+			interrupted = true;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	} while (!interrupted);
+
+	state.activity.release();
+	state.core.release();
 }

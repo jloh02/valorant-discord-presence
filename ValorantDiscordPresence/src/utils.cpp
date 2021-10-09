@@ -1,9 +1,46 @@
 #include "utils.h"
 
-void startValorantApplication() {
-	// additional information
-	STARTUPINFOA si;
+namespace {
 	PROCESS_INFORMATION pi;
+	HANDLE valorantPHandle = 0;
+}
+
+bool openExistingValorantApplication() { //return true if already open
+	DWORD pid = 0;
+
+	// Create toolhelp snapshot.
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	PROCESSENTRY32 process;
+	ZeroMemory(&process, sizeof(process));
+	process.dwSize = sizeof(process);
+
+	// Walkthrough all processes.
+	if (Process32First(snapshot, &process))
+	{
+		do
+		{
+			std::wstring ws(process.szExeFile);
+			if (std::string(ws.begin(),ws.end()) == std::string("RiotClientServices.exe"))
+			{
+				pid = process.th32ProcessID;
+				break;
+			}
+		} while (Process32Next(snapshot, &process));
+	}
+
+	CloseHandle(snapshot);
+
+	if (pid == 0) return false; //Process not found
+
+	valorantPHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	return true;
+}
+
+void startValorantApplication() {	
+	if (openExistingValorantApplication()) return;
+	std::cout << "Launching valorant...\n";
+
+	STARTUPINFOA si;
 
 	// set the size of the structures
 	ZeroMemory(&si, sizeof(si));
@@ -18,7 +55,7 @@ void startValorantApplication() {
 	if (!CreateProcessA
 	(
 		NULL,			// No module name (use command line)
-		cmd,			// Command
+		cmd,			// Command to launch application
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
 		FALSE,          // Set handle inheritance to FALSE
@@ -31,8 +68,15 @@ void startValorantApplication() {
 		//printf("CreateProcess failed (%d).\n", GetLastError());
 		exit(-1);
 	}
-
-	// Close process and thread handles. 
-	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
+	valorantPHandle = pi.hProcess;
+}
+
+bool isValorantClosed() {
+	long wait = WaitForSingleObject(valorantPHandle, 0);
+	if (wait == WAIT_FAILED || wait == WAIT_OBJECT_0) {
+		CloseHandle(valorantPHandle);
+		return true;
+	}
+	return false;
 }

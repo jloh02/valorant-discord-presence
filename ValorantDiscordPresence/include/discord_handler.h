@@ -15,7 +15,7 @@
 struct DiscordState
 {
 	discord::User currentUser;
-	std::unique_ptr <discord::Activity> activity;
+	std::unique_ptr<discord::Activity> activity;
 	std::unique_ptr<discord::Core> core;
 };
 
