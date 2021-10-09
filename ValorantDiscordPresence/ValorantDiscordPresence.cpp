@@ -58,11 +58,16 @@ int main(int, char** argv)
 		*/
 	
 	
-	valorant::initialize(); //WSS callback handles ending of application to prevent infinite while loop
+	valorant::initialize();
 
-	while (true) {
-		valorant::getPresence();
-		state.core->RunCallbacks();
-		std::this_thread::sleep_for(std::chrono::seconds(15));
-	}
+	std::signal(SIGINT, [](int) { interrupted = true; });
+
+	do {
+		if(!valorant::getPresence()) std::cout << "Error getting presence" << std::endl;
+		discord::Result cbRes = state.core->RunCallbacks();
+		if (cbRes != discord::Result::Ok) {
+			std::cout << "Discord error: " << static_cast<int>(cbRes) << std::endl;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	} while (!interrupted);
 }
