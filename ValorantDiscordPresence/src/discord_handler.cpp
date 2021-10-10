@@ -4,7 +4,6 @@
 #define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
 
 namespace disc {
-
 	namespace {
 		time_t timeStart;	//Used to track start of game
 
@@ -62,10 +61,9 @@ namespace disc {
 				gameType[0] = toupper(gameType[0]);
 				if (strlen(gameType.c_str()) == 0) gameType = "Custom";
 
-				
 				if (presenceDoc["isIdle"].GetBool()) //Idle state
 					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon");
-				else {					
+				else {
 					if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "MENUS")) { //In lobby
 						bool isQueue = presenceDoc["partyState"].GetString() == "MATCHMAKING";
 
@@ -77,7 +75,7 @@ namespace disc {
 								presenceDoc["partySize"].GetInt(),
 								presenceDoc["maxPartySize"].GetInt()).c_str(),
 							gameType.c_str(),
-							isQueue ? timeStart : NULL, 
+							isQueue ? timeStart : NULL,
 							NULL,
 							"",
 							"valorant_icon"
@@ -87,11 +85,11 @@ namespace disc {
 						//Agent select
 						if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "PREGAME")) {
 							if (strcmp(prevState.c_str(), "select")) valorant::getMatchID(true);
-							prevState = "select"; 
-							
+							prevState = "select";
+
 							valorant::GameData gd = valorant::getGameDetails(true);
 
-							updateActivity("Agent Select", gameType.c_str(), NULL, std::time(0)+(gd.timeLeft/1000000000), gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
+							updateActivity("Agent Select", gameType.c_str(), NULL, std::time(0) + (gd.timeLeft / 1000000000), gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
 						}
 						//In game
 						else if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "INGAME")) {
@@ -115,10 +113,9 @@ namespace disc {
 									std::format("{} - {}", std::to_string(presenceDoc["partyOwnerMatchScoreAllyTeam"].GetInt()), std::to_string(presenceDoc["partyOwnerMatchScoreEnemyTeam"].GetInt())).c_str(),
 									timeStart,
 									NULL,
-									gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), 
+									gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(),
 									gd.mapID.c_str()
 								);
-
 							}
 						}
 					}
@@ -171,8 +168,8 @@ namespace disc {
 		//state.core->ActivityManager().ClearActivity([](discord::Result result) {});
 		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
 #ifdef DEBUG_ACTIVITY
-			if(printCount==300) std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+			if (printCount == 300) std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
 #endif
-		});
+			});
 	}
 }

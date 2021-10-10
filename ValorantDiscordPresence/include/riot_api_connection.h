@@ -18,7 +18,6 @@
 #include "rapidjson/prettywriter.h"
 
 namespace valorant {
-
 	struct GameData {
 		std::string agentID, mapID;
 		uint64_t timeLeft;

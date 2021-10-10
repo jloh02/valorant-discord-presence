@@ -25,7 +25,7 @@ namespace
 int main(int, char** argv)
 {
 	startValorantApplication();
-	
+
 	/*
 	discord::LobbyTransaction lobby{};
 	state.core->LobbyManager().GetLobbyCreateTransaction(&lobby);
@@ -55,7 +55,6 @@ int main(int, char** argv)
 			}
 		});
 		*/
-	
 
 	disc::initialize();
 	valorant::initialize();
@@ -64,7 +63,7 @@ int main(int, char** argv)
 
 	do {
 		if (!valorant::getPresence()) std::cout << "Can't get presence\n"; //continue; //Unable to get presence
-		discord::Result cbRes = state.core->RunCallbacks(); 
+		discord::Result cbRes = state.core->RunCallbacks();
 		if (cbRes != discord::Result::Ok) //Unable to set presence
 			std::cout << "Discord error: " << static_cast<int>(cbRes) << std::endl;
 		if (isValorantClosed()) {
