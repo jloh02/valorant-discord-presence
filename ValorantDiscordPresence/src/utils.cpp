@@ -20,7 +20,7 @@ bool openExistingValorantApplication() { //returns true if already open
 		do
 		{
 			std::wstring ws(process.szExeFile);
-			if (std::string(ws.begin(), ws.end()) == std::string("RiotClientServices.exe"))
+			if (std::string(ws.begin(), ws.end()) == std::string("VALORANT.exe"))
 			{
 				pid = process.th32ProcessID;
 				break;
