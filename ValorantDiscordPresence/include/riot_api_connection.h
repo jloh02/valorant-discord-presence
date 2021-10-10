@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <map>
+#include <algorithm>
 
 #include "discord_handler.h"
 
@@ -17,8 +18,16 @@
 #include "rapidjson/prettywriter.h"
 
 namespace valorant {
+
+	struct GameData {
+		std::string agentID, mapID;
+		uint64_t timeLeft;
+	};
+
 	inline std::map<std::string, std::string> credentials;
 	void initialize();
 	bool getPresence();
-	std::string getMatchID();
+
+	void getMatchID(bool pregame);
+	GameData getGameDetails(bool pregame);
 }

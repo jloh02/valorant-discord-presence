@@ -1,12 +1,14 @@
 #include "discord_handler.h"
 
 //#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
-//#define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
+#define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
 
 namespace disc {
 
 	namespace {
-		time_t timeStart;
+		time_t timeStart;	//Used to track start of game
+
+		//Global variables to prevent deleted pointers
 		discord::Core* core{};
 		discord::Activity act{};
 
@@ -14,7 +16,11 @@ namespace disc {
 	}
 
 	void initialize() {
-		discord::Result result = discord::Core::Create(886156186653687838, DiscordCreateFlags_Default, &core);
+		discord::Result result = discord::Core::Create(886156186653687838, DiscordCreateFlags_NoRequireDiscord, &core);
+		if (result != discord::Result::Ok) {
+			std::cout << "Discord not opened/installed\n";
+			exit(0); //Exit if unable to connect to Discord (Not installed or closed)
+		}
 		state.core.reset(core);
 		state.activity.reset(&act);
 
@@ -29,8 +35,7 @@ namespace disc {
 			discord::LogLevel::Debug, [](discord::LogLevel level, const char* message)
 			{ std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
 
-		state.core->ActivityManager().RegisterCommand("\"C:/Riot Games/Riot Client/RiotClientServices.exe\" --launch-product=valorant --launch-patchline=live");
-
+		//Default load-in activity status
 		state.activity->GetAssets().SetLargeText("");
 		state.activity->GetAssets().SetSmallText("");
 		state.activity->SetType(discord::ActivityType::Playing);
@@ -38,7 +43,7 @@ namespace disc {
 
 		discord::Result cbRes = state.core->RunCallbacks();
 		if (cbRes != discord::Result::Ok) {
-			std::cout << "Discord not opened: " << static_cast<int>(cbRes) << std::endl;
+			std::cout << "Unable to connect to Discord: " << static_cast<int>(cbRes) << std::endl;
 			exit(0);
 		}
 	}
@@ -49,28 +54,28 @@ namespace disc {
 #ifdef DEBUG_UPDATE_ACTIVITY
 				std::cout << base64_decode(a["private"].GetString()) << std::endl;
 #endif
+				rapidjson::Document presenceDoc;
+				presenceDoc.Parse(base64_decode(a["private"].GetString()).c_str());
+				if (presenceDoc.HasParseError() || !presenceDoc["isValid"].GetBool()) continue;
 
-				rapidjson::Document doc;
-				doc.Parse(base64_decode(a["private"].GetString()).c_str());
-				if (doc.HasParseError() || !doc["isValid"].GetBool()) continue;
-
-				std::string gameType = doc["queueId"].GetString();
+				std::string gameType = presenceDoc["queueId"].GetString();
 				gameType[0] = toupper(gameType[0]);
 				if (strlen(gameType.c_str()) == 0) gameType = "Custom";
 
-				if (doc["isIdle"].GetBool())
+				
+				if (presenceDoc["isIdle"].GetBool()) //Idle state
 					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon");
-				else {
-					if (!strcmp(doc["sessionLoopState"].GetString(), "MENUS")) {
-						bool isQueue = doc["partyState"].GetString() == "MATCHMAKING";
+				else {					
+					if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "MENUS")) { //In lobby
+						bool isQueue = presenceDoc["partyState"].GetString() == "MATCHMAKING";
 
 						if (isQueue && strcmp(prevState.c_str(), "queue")) timeStart = std::time(0);
 						prevState = isQueue ? "queue" : "menu";
 
 						updateActivity(
 							std::format("{} ({} of {})", isQueue ? "In Queue" : "In Lobby",
-								doc["partySize"].GetInt(),
-								doc["maxPartySize"].GetInt()).c_str(),
+								presenceDoc["partySize"].GetInt(),
+								presenceDoc["maxPartySize"].GetInt()).c_str(),
 							gameType.c_str(),
 							isQueue ? timeStart : NULL, 
 							NULL,
@@ -79,40 +84,39 @@ namespace disc {
 						);
 					}
 					else {
-						std::string map = doc["partyOwnerMatchMap"].GetString();
-						size_t lastSlash = map.rfind("/");
-						if(lastSlash != std::string::npos) map = map.substr();
-						std::string mapAsset(map);
-						mapAsset[0] = tolower(mapAsset[0]);
+						//Agent select
+						if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "PREGAME")) {
+							if (strcmp(prevState.c_str(), "select")) valorant::getMatchID(true);
+							prevState = "select"; 
+							
+							valorant::GameData gd = valorant::getGameDetails(true);
 
-#ifdef DEBUG_UPDATE_ACTIVITY
-						std::cout << map << std::endl;
-#endif
-
-						if (!strcmp(doc["sessionLoopState"].GetString(), "PREGAME")) {
-							if (strcmp(prevState.c_str(), "select")) timeStart = std::time(0);
-							prevState = "select";
-
-							updateActivity("Agent Select", gameType.c_str(), timeStart, NULL, "valorant_icon", mapAsset.c_str());
+							updateActivity("Agent Select", gameType.c_str(), NULL, std::time(0)+(gd.timeLeft/1000000000), gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
 						}
-						else if (!strcmp(doc["sessionLoopState"].GetString(), "INGAME")) {
-							if (strcmp(prevState.c_str(), "game")) timeStart = std::time(0);
+						//In game
+						else if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "INGAME")) {
+							if (strcmp(prevState.c_str(), "game")) {
+								valorant::getMatchID(false);
+								timeStart = std::time(0);
+							}
 							prevState = "game";
 
-							if (!strcmp(map.c_str(), "Range") || map.empty())
+							valorant::GameData gd = valorant::getGameDetails(false);
+
+							if (gd.mapID == "range" || gd.mapID.empty()) //In range
 								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range");
-							else {
+							else {	//Online game
 								updateActivity(
 									std::format("{} ({} {})",
 										gameType,
-										doc["partySize"].GetInt(),
-										strcmp(gameType.c_str(), "Custom") ? "stack" : std::format("of {}", doc["maxPartySize"].GetInt())
+										presenceDoc["partySize"].GetInt(),
+										strcmp(gameType.c_str(), "Custom") ? "stack" : std::format("of {}", presenceDoc["maxPartySize"].GetInt())
 									).c_str(),
-									std::format("{} - {}", std::to_string(doc["partyOwnerMatchScoreAllyTeam"].GetInt()), std::to_string(doc["partyOwnerMatchScoreEnemyTeam"].GetInt())).c_str(),
+									std::format("{} - {}", std::to_string(presenceDoc["partyOwnerMatchScoreAllyTeam"].GetInt()), std::to_string(presenceDoc["partyOwnerMatchScoreEnemyTeam"].GetInt())).c_str(),
 									timeStart,
 									NULL,
-									"valorant_icon",
-									mapAsset.c_str()
+									gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), 
+									gd.mapID.c_str()
 								);
 
 							}

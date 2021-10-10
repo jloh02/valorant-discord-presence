@@ -1,6 +1,7 @@
 #include "riot_api_connection.h"
 
-std::string lockfile[5];
+std::string lockfile[5] = {};
+std::string matchID;
 
 namespace valorant {
 	bool getToken();
@@ -139,10 +140,32 @@ namespace valorant {
 		return true;
 	}
 
-	std::string getMatchID() {
-		std::string res = remote_connect("/pregame/v1/players", valorant::credentials["puuid"]);
+	void getMatchID(bool pregame) {
+		std::string res = remote_connect(pregame?"/pregame/v1/players":"/core-game/v1/players", valorant::credentials["puuid"]);
 		rapidjson::Document pregameDoc;
 		pregameDoc.Parse(res.c_str());
-		return (pregameDoc.FindMember("MatchID")->value).GetString();
+		matchID = (pregameDoc.FindMember("MatchID")->value).GetString();
+	}
+
+	GameData getGameDetails(bool pregame) {
+		std::string res = remote_connect(pregame?"/pregame/v1/matches":"/core-game/v1/matches", matchID);
+		if (res.find("404") != std::string::npos) return { "" , "" , 0 };
+		rapidjson::Document pregameDoc;
+		pregameDoc.Parse(res.c_str());
+
+		std::string agent;
+		rapidjson::GenericArray<false, rapidjson::Value> allyPlayers = ((pregame?(pregameDoc.FindMember("AllyTeam")->value):pregameDoc).FindMember("Players")->value).GetArray();
+		for (auto& p : allyPlayers) {
+			std::string subj = ((p.FindMember("PlayerIdentity")->value).FindMember("Subject")->value).GetString();
+			if (subj == credentials["puuid"]) agent = (p.FindMember("CharacterID")->value).GetString();
+		}
+		agent.erase(std::remove(agent.begin(), agent.end(), '-'), agent.end());
+
+		std::string map = (pregameDoc.FindMember("MapID")->value).GetString();
+		size_t lastSlash = map.rfind("/");
+		if (lastSlash != std::string::npos) map = map.substr(lastSlash+1);
+		map[0] = tolower(map[0]);
+
+		return { agent, map , pregame?(pregameDoc.FindMember("PhaseTimeRemainingNS")->value).GetUint64():0 };
 	}
 }
