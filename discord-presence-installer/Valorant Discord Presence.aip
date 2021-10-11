@@ -6,7 +6,7 @@
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="x64_Release:1"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
-    <ROW Property="ARPPRODUCTICON" Value="ValorantDiscordPresence_1.exe" Type="8"/>
+    <ROW Property="ARPPRODUCTICON" Value="ValorantDiscordPresence.exe" Type="8"/>
     <ROW Property="Manufacturer" Value="jloh02"/>
     <ROW Property="ProductCode" Value="1033:{9601451C-251A-4E8E-A870-90F37193F7F7} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
@@ -31,8 +31,8 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{34BD9614-D62C-4333-9A17-84711602858D}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="ProductInformation" ComponentId="{8632BAF3-16A9-4A76-BB4D-90B9252B4933}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
-    <ROW Component="SHORTCUTDIR" ComponentId="{1060CF8E-C55B-4BD8-8B48-89AB70BB9BA7}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="ValorantDiscordPresence.exe" ComponentId="{C53E25F8-6772-4BA1-A8E8-5802DF02A063}" Directory_="APPDIR" Attributes="256" KeyPath="ValorantDiscordPresence.exe"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{235581B7-8F46-4381-8249-E6778C120CE0}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="ValorantDiscordPresence.exe_1" ComponentId="{A39160C5-9910-4DA2-BDFD-7944E133BB49}" Directory_="APPDIR" Attributes="256" KeyPath="ValorantDiscordPresence.exe_1"/>
     <ROW Component="config.txt" ComponentId="{90FFB4D9-F962-4B5E-8B71-F4BB6870D315}" Directory_="APPDIR" Attributes="0" KeyPath="config.txt" Type="0"/>
     <ROW Component="discord_game_sdk.dll" ComponentId="{D30DCC3C-1528-48FF-93E3-5B43B3AE93A9}" Directory_="APPDIR" Attributes="256" KeyPath="discord_game_sdk.dll"/>
     <ROW Component="libcrypto1_1x64.dll" ComponentId="{BBD90C25-C7B9-4336-9A4D-402D0223D762}" Directory_="APPDIR" Attributes="256" KeyPath="libcrypto1_1x64.dll"/>
@@ -43,15 +43,15 @@
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="ValorantDiscordPresence.exe" Component_="ValorantDiscordPresence.exe" FileName="VALORA~1.EXE|ValorantDiscordPresence.exe" Attributes="0" SourcePath="..\x64\Release\ValorantDiscordPresence.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="config.txt" Component_="config.txt" FileName="config.txt" Attributes="0" SourcePath="..\ValorantDiscordPresence\config.txt" SelfReg="false"/>
-    <ROW File="discord_game_sdk.dll" Component_="discord_game_sdk.dll" FileName="DISCOR~1.DLL|discord_game_sdk.dll" Attributes="0" SourcePath="..\ValorantDiscordPresence\discord_game_sdk.dll" SelfReg="false"/>
-    <ROW File="libcrypto1_1x64.dll" Component_="libcrypto1_1x64.dll" FileName="LIBCRY~1.DLL|libcrypto-1_1-x64.dll" Attributes="0" SourcePath="..\ValorantDiscordPresence\libcrypto-1_1-x64.dll" SelfReg="false"/>
-    <ROW File="libssl1_1x64.dll" Component_="libssl1_1x64.dll" FileName="LIBSSL~1.DLL|libssl-1_1-x64.dll" Attributes="0" SourcePath="..\ValorantDiscordPresence\libssl-1_1-x64.dll" SelfReg="false"/>
-    <ROW File="valorant.ico" Component_="config.txt" FileName="valorant.ico" Attributes="0" SourcePath="..\valorant.ico" SelfReg="false"/>
+    <ROW File="config.txt" Component_="config.txt" FileName="config.txt" Attributes="0" SourcePath="..\discord-presence\ValorantDiscordPresence\config.txt" SelfReg="false"/>
+    <ROW File="discord_game_sdk.dll" Component_="discord_game_sdk.dll" FileName="DISCOR~1.DLL|discord_game_sdk.dll" Attributes="0" SourcePath="..\discord-presence\ValorantDiscordPresence\discord_game_sdk.dll" SelfReg="false"/>
+    <ROW File="libcrypto1_1x64.dll" Component_="libcrypto1_1x64.dll" FileName="LIBCRY~1.DLL|libcrypto-1_1-x64.dll" Attributes="0" SourcePath="..\discord-presence\ValorantDiscordPresence\libcrypto-1_1-x64.dll" SelfReg="false"/>
+    <ROW File="libssl1_1x64.dll" Component_="libssl1_1x64.dll" FileName="LIBSSL~1.DLL|libssl-1_1-x64.dll" Attributes="0" SourcePath="..\discord-presence\ValorantDiscordPresence\libssl-1_1-x64.dll" SelfReg="false"/>
+    <ROW File="valorant.ico" Component_="config.txt" FileName="valorant.ico" Attributes="0" SourcePath="..\discord-presence\valorant.ico" SelfReg="false"/>
+    <ROW File="ValorantDiscordPresence.exe_1" Component_="ValorantDiscordPresence.exe_1" FileName="VALORA~1.EXE|ValorantDiscordPresence.exe" Attributes="0" SourcePath="..\discord-presence\x64\Release\ValorantDiscordPresence.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
-    <ROW MsiShortcutProperty="ValorantDiscordPresence.exe0" Shortcut_="ValorantDiscordPresence.exe" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
+    <ROW MsiShortcutProperty="VALORANTWithDiscordPresence0" Shortcut_="VALORANTWithDiscordPresence" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -125,15 +125,15 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
     <ROW Feature_="MainFeature" Component_="APPDIR"/>
     <ROW Feature_="MainFeature" Component_="ProductInformation"/>
-    <ROW Feature_="MainFeature" Component_="ValorantDiscordPresence.exe"/>
     <ROW Feature_="MainFeature" Component_="config.txt"/>
     <ROW Feature_="MainFeature" Component_="discord_game_sdk.dll"/>
     <ROW Feature_="MainFeature" Component_="libcrypto1_1x64.dll"/>
     <ROW Feature_="MainFeature" Component_="libssl1_1x64.dll"/>
     <ROW Feature_="MainFeature" Component_="SHORTCUTDIR"/>
+    <ROW Feature_="MainFeature" Component_="ValorantDiscordPresence.exe_1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="ValorantDiscordPresence_1.exe" SourcePath="..\valorant.ico" Index="0"/>
+    <ROW Name="ValorantDiscordPresence.exe" SourcePath="..\discord-presence\valorant.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -160,7 +160,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="ValorantDiscordPresence.exe" Directory_="SHORTCUTDIR" Name="VALORA~1|VALORANT (With Discord Presence)" Component_="ValorantDiscordPresence.exe" Target="[#ValorantDiscordPresence.exe]" Description="ValorantDiscordPresence.exe" Hotkey="0" Icon_="ValorantDiscordPresence_1.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="VALORANTWithDiscordPresence" Directory_="SHORTCUTDIR" Name="VALORA~1|VALORANT (With Discord Presence)" Component_="ValorantDiscordPresence.exe_1" Target="[#ValorantDiscordPresence.exe_1]" Hotkey="0" Icon_="ValorantDiscordPresence.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
