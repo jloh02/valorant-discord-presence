@@ -22,7 +22,7 @@ namespace
 
 //https://discord.com/developers/docs/game-sdk/sdk-starter-guide#testing-locally-with-two-clients
 
-int main(int, char** argv)
+int main()
 {
 	startValorantApplication();
 
