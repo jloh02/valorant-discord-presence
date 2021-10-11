@@ -7,6 +7,8 @@
 #include <tchar.h>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <format>
 
 void startValorantApplication();
 bool isValorantClosed();

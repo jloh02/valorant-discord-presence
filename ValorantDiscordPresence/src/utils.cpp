@@ -46,22 +46,24 @@ void startValorantApplication() {
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
 
-	char cmd[128];
-	const char* valCmd = "\"C:/Riot Games/Riot Client/RiotClientServices.exe\" --launch-product=valorant --launch-patchline=live";
-	strcpy_s(cmd, valCmd);
+
+	std::ifstream configFile("config.txt");
+	std::string cmd;
+	std::getline(configFile, cmd);
+	cmd = std::format("\"{}\" --launch-product=valorant --launch-patchline=live", cmd);
 
 	if (!CreateProcessA
 	(
-		NULL,			// No module name (use command line)
-		cmd,			// Command to launch application
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory
-		&si,            // Pointer to STARTUPINFO structure
-		&pi				// Pointer to PROCESS_INFORMATION structure
+		NULL,					// No module name (use command line)
+		_strdup(cmd.c_str()),	// Command to launch application
+		NULL,					// Process handle not inheritable
+		NULL,					// Thread handle not inheritable
+		FALSE,					// Set handle inheritance to FALSE
+		0,						// No creation flags
+		NULL,					// Use parent's environment block
+		NULL,					// Use parent's starting directory
+		&si,					// Pointer to STARTUPINFO structure
+		&pi						// Pointer to PROCESS_INFORMATION structure
 	)) {
 		//printf("CreateProcess failed (%d).\n", GetLastError());
 		exit(-1);
