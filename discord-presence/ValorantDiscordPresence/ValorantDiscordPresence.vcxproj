@@ -101,6 +101,14 @@
     <ClInclude Include="include\riot_api_connection.h" />
     <ClInclude Include="include\utils.h" />
     <ClInclude Include="include\WIN32_config.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ValorantDiscordPresence.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\valorant.ico" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

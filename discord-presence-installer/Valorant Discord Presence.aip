@@ -6,12 +6,11 @@
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="x64_Release:1"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
-    <ROW Property="ARPPRODUCTICON" Value="ValorantDiscordPresence.exe" Type="8"/>
     <ROW Property="Manufacturer" Value="jloh02"/>
     <ROW Property="ProductCode" Value="1033:{9601451C-251A-4E8E-A870-90F37193F7F7} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Valorant Discord Presence"/>
-    <ROW Property="ProductVersion" Value="0.1.0" Type="32"/>
+    <ROW Property="ProductVersion" Value="0.1.1" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{20FEB06B-EFBB-47C9-9069-443084EDD44B}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="x64_Release:Windows 9x/ME" ValueLocId="-"/>
@@ -25,6 +24,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
     <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
   </COMPONENT>
@@ -52,6 +52,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
     <ROW MsiShortcutProperty="VALORANTWithDiscordPresence0" Shortcut_="VALORANTWithDiscordPresence" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
+    <ROW MsiShortcutProperty="VALORANTWithDiscordPresence_10" Shortcut_="VALORANTWithDiscordPresence_1" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -118,7 +119,7 @@
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="x64_Release:[ProgramFilesFolder][ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
@@ -161,6 +162,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
     <ROW Shortcut="VALORANTWithDiscordPresence" Directory_="SHORTCUTDIR" Name="VALORA~1|VALORANT (With Discord Presence)" Component_="ValorantDiscordPresence.exe_1" Target="[#ValorantDiscordPresence.exe_1]" Hotkey="0" Icon_="ValorantDiscordPresence.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="VALORANTWithDiscordPresence_1" Directory_="DesktopFolder" Name="VALORA~1|VALORANT (With Discord Presence)" Component_="ValorantDiscordPresence.exe_1" Target="[#ValorantDiscordPresence.exe_1]" Hotkey="0" Icon_="ValorantDiscordPresence.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
