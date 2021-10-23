@@ -20,6 +20,9 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
+	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		rw.WriteHeader(404)
+	})
 	http.HandleFunc("/join", JoinParty)
 
 	http.ListenAndServe("localhost:"+port, nil)
