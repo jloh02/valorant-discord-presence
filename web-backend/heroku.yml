@@ -6,4 +6,3 @@ build:
 
 run:
   web: main
-  local: main
