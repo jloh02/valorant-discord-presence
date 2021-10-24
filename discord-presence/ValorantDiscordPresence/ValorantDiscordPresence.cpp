@@ -3,17 +3,17 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <format>
 #include <iostream>
 #include <thread>
+#include <string>
 #include <vector>
-#include <string>
-#include <format>
-#include <string>
 
 #include "WIN32_config.h"
 #include "utils.h"
 #include "discord_handler.h"
 #include "riot_api_connection.h"
+#include "web_server.h"
 
 namespace
 {
@@ -24,7 +24,11 @@ namespace
 
 int main()
 {
-	startValorantApplication();
+	if (!server::initialize()) {
+		std::cerr << "Unable to find available IP port\n";
+		exit(-1);
+	}
+	std::thread serverThread(server::listenAsync);
 
 	/*
 	discord::LobbyTransaction lobby{};
@@ -57,6 +61,10 @@ int main()
 		*/
 
 	disc::initialize();
+
+	while (true);
+	/*
+	startValorantApplication();
 	valorant::initialize();
 
 	std::signal(SIGINT, [](int) { interrupted = true; });
@@ -74,5 +82,6 @@ int main()
 	} while (!interrupted);
 
 	state.activity.release();
-	state.core.release();
+	state.core.release();*/
+	server::stop();
 }
