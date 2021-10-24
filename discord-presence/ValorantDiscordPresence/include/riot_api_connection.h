@@ -8,6 +8,7 @@
 
 #include "discord_handler.h"
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib/httplib.h"
 #include "base64/base64.h"
 

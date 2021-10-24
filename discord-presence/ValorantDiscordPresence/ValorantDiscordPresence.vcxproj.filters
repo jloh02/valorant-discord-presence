@@ -72,9 +72,6 @@
     <ClCompile Include="src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\web_server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\base64\base64.h">
@@ -261,9 +258,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\web_server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
