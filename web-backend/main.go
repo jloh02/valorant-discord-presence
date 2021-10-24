@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -12,9 +11,6 @@ import (
 Local testing:
 go build -o bin/main.exe -v .
 heroku local web
-
-Deployment:
-go build -o bin/main -v .
 */
 
 func main() {
@@ -25,11 +21,11 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write(bytes.NewBufferString("pong").Bytes())
+		rw.WriteHeader(404)
 	})
 	http.HandleFunc("/join", JoinParty)
 
-	http.ListenAndServe(":"+port, nil)
+	http.ListenAndServe("localhost:"+port, nil)
 }
 
 func JoinParty(w http.ResponseWriter, r *http.Request) {
