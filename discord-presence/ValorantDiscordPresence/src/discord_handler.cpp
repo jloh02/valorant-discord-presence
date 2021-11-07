@@ -1,6 +1,6 @@
 #include "discord_handler.h"
 
-//#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
+#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
 #define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
 
 namespace disc {
@@ -165,6 +165,7 @@ namespace disc {
 		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
 #ifdef DEBUG_ACTIVITY
 			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+			if (result != discord::Result::Ok) std::cout << static_cast<int>(result) << std::endl;
 #endif
 		});
 	}
