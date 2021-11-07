@@ -65,7 +65,7 @@ namespace disc {
 					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon");
 				else {
 					if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "MENUS")) { //In lobby
-						bool isQueue = presenceDoc["partyState"].GetString() == "MATCHMAKING";
+						bool isQueue = !strcmp(presenceDoc["partyState"].GetString(),"MATCHMAKING");
 
 						if (isQueue && strcmp(prevState.c_str(), "queue")) timeStart = std::time(0);
 						prevState = isQueue ? "queue" : "menu";
@@ -151,7 +151,6 @@ namespace disc {
 		std::cout << buffer.GetString() << std::endl;
 	}
 
-	int printCount = 0;
 	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg) {
 		state.activity->SetState(actState);
 		state.activity->SetDetails(actDetails);
@@ -160,16 +159,13 @@ namespace disc {
 		state.activity->GetAssets().SetSmallImage(smallImg);
 		state.activity->GetAssets().SetLargeImage(largeImg);
 #ifdef DEBUG_ACTIVITY
-		if (!printCount--) {
-			printActivity();
-			printCount = 300;
-		}
+		printActivity();
 #endif
 		//state.core->ActivityManager().ClearActivity([](discord::Result result) {});
 		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
 #ifdef DEBUG_ACTIVITY
-			if (printCount == 300) std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
+			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
 #endif
-			});
+		});
 	}
 }

@@ -24,11 +24,11 @@ namespace
 
 int main()
 {
-	if (!server::initialize()) {
+	/*if (!server::initialize()) {
 		std::cerr << "Unable to find available IP port\n";
 		exit(-1);
 	}
-	std::thread serverThread(server::listenAsync);
+	std::thread serverThread(server::listenAsync);*/
 
 	/*
 	discord::LobbyTransaction lobby{};
@@ -62,26 +62,31 @@ int main()
 
 	disc::initialize();
 
-	while (true);
-	/*
 	startValorantApplication();
 	valorant::initialize();
 
 	std::signal(SIGINT, [](int) { interrupted = true; });
 
 	do {
-		if (!valorant::getPresence()) std::cout << "Can't get presence\n"; //continue; //Unable to get presence
+		if (!valorant::getPresence()) {
+			std::cout << "Can't get presence\n";
+			continue;
+		}
+
 		discord::Result cbRes = state.core->RunCallbacks();
 		if (cbRes != discord::Result::Ok) //Unable to set presence
 			std::cout << "Discord error: " << static_cast<int>(cbRes) << std::endl;
+
 		if (isValorantClosed()) {
 			std::cout << "Valorant Application Closed\n";
 			interrupted = true;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	} while (!interrupted);
 
 	state.activity.release();
-	state.core.release();*/
-	server::stop();
+	state.core.release();
+
+
+	//server::stop();
 }
