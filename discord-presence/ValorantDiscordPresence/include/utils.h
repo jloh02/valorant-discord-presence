@@ -12,3 +12,4 @@
 
 void startValorantApplication();
 bool isValorantClosed();
+void popup(const char* text);

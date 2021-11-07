@@ -18,6 +18,7 @@ namespace disc {
 		discord::Result result = discord::Core::Create(886156186653687838, DiscordCreateFlags_NoRequireDiscord, &core);
 		if (result != discord::Result::Ok) {
 			std::cout << "Discord not opened/installed\n";
+			popup("Unable to connect to Discord. Please ensure that Discord is installed and opened.");
 			exit(0); //Exit if unable to connect to Discord (Not installed or closed)
 		}
 		state.core.reset(core);
@@ -43,6 +44,7 @@ namespace disc {
 		discord::Result cbRes = state.core->RunCallbacks();
 		if (cbRes != discord::Result::Ok) {
 			std::cout << "Unable to connect to Discord: " << static_cast<int>(cbRes) << std::endl;
+			popup("Unable to connect to Discord. Please restart Discord and try again.");
 			exit(0);
 		}
 	}

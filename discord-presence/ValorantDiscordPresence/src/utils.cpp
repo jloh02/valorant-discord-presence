@@ -56,6 +56,7 @@ void startValorantApplication() {
 	std::wstring regCmd;
 	LONG regReadRes = getRiotClientPath(regCmd);
 	if (ERROR_SUCCESS != regReadRes) {
+		popup("Unable to find VALORANT application. Please ensure the game is installed and attempt to launch the application again.");
 		exit(0);
 	}
 	regCmd = regCmd.substr(0, regCmd.find(L" --uninstall"));
@@ -82,8 +83,9 @@ void startValorantApplication() {
 		&si,					// Pointer to STARTUPINFO structure
 		&pi						// Pointer to PROCESS_INFORMATION structure
 	)) {
-		//printf("CreateProcess failed (%d).\n", GetLastError());
-		exit(-1);
+		popup("Unable to start VALORANT.exe. Please try to launch the application again.");
+		printf("CreateProcess failed (%d)\n", GetLastError());
+		exit(0);
 	}
 	CloseHandle(pi.hThread);
 	valorantPHandle = pi.hProcess;
@@ -96,4 +98,9 @@ bool isValorantClosed() {
 		return true;
 	}
 	return false;
+}
+
+void popup(const char* text) {
+	std::string finalText = std::format("{}\n\nIf the problem persists, please report this issue to the developer.", text);
+	MessageBox(nullptr, std::wstring(finalText.begin(),finalText.end()).c_str(), L"VALORANT Discord Presence", MB_OK);
 }
