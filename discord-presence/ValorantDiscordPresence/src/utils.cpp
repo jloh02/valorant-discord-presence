@@ -36,21 +36,38 @@ bool openExistingValorantApplication() { //returns true if already open
 	return true;
 }
 
+LONG getRiotClientPath(std::wstring& output){
+	HKEY hKey;
+	LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Riot Game valorant.live", 0, KEY_READ, &hKey);
+	if (ERROR_SUCCESS != lRes) return lRes;
+
+	WCHAR szBuffer[512];
+	DWORD dwBufferSize = sizeof(szBuffer);
+	ULONG nError;
+	nError = RegQueryValueExW(hKey, L"UninstallString", 0, NULL, (LPBYTE)szBuffer, &dwBufferSize);
+	if (ERROR_SUCCESS == nError) output = szBuffer;
+	return nError;
+ }
+
 void startValorantApplication() {
 	if (openExistingValorantApplication()) return;
 	std::cout << "Launching valorant...\n";
+
+	std::wstring regCmd;
+	LONG regReadRes = getRiotClientPath(regCmd);
+	if (ERROR_SUCCESS != regReadRes) {
+		exit(0);
+	}
+	regCmd = regCmd.substr(0, regCmd.find(L" --uninstall"));
+
+	std::string cmd(regCmd.begin(),regCmd.end());
+	cmd = std::format("{} --launch-product=valorant --launch-patchline=live", cmd);
 
 	STARTUPINFOA si;
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
-
-
-	std::ifstream configFile("config.txt");
-	std::string cmd;
-	std::getline(configFile, cmd);
-	cmd = std::format("\"{}\" --launch-product=valorant --launch-patchline=live", cmd);
 
 	if (!CreateProcessA
 	(
