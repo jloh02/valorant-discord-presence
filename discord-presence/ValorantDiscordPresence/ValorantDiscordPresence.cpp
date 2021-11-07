@@ -26,9 +26,11 @@ int main()
 {
 	/*if (!server::initialize()) {
 		std::cerr << "Unable to find available IP port\n";
-		exit(-1);
-	}
-	std::thread serverThread(server::listenAsync);*/
+		popup("Unable to start invitation server. Invite to party functionality may be limited.");
+	} else {
+		std::thread serverThread(server::listenAsync);
+	}*/
+	
 
 	/*
 	discord::LobbyTransaction lobby{};

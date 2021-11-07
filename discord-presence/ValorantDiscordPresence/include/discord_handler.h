@@ -4,6 +4,8 @@
 #include <memory>
 #include <format>
 
+#include "utils.h"
+
 #include "discord-sdk/discord.h"
 #include "riot_api_connection.h"
 
