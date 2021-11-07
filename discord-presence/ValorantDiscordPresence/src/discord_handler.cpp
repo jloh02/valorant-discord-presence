@@ -28,7 +28,7 @@ namespace disc {
 		{
 			std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
 				<< ")\n";
-			std::exit(-1);
+			std::exit(0);
 		}
 
 		state.core->SetLogHook(
