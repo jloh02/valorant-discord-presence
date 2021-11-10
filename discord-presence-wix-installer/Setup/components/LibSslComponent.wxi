@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<Component Guid="*">
+		<File Source="..\..\discord-presence\ValorantDiscordPresence\libssl-1_1-x64.dll" KeyPath="yes" />
+	</Component>
+</Include>

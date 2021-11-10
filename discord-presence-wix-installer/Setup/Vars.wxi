@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<?define ProductName = "VALORANT Discord Presence" ?>
+	<?define FolderName= "ValorantDiscordPresence" ?>
+	<?define ManufacturerName= "jloh02" ?>
+</Include>

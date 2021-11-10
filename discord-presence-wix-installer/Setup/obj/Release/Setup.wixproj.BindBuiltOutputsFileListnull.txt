@@ -1,0 +1,2 @@
+D:\Users\Jonathan\Documents\DiscordPresences\ValorantDiscordPresence\discord-presence-wix-installer\Setup\bin\Release\Install VALORANT Discord Presence.msi
+D:\Users\Jonathan\Documents\DiscordPresences\ValorantDiscordPresence\discord-presence-wix-installer\Setup\bin\Release\Install VALORANT Discord Presence.wixpdb

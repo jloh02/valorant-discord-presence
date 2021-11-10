@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<Component Id="ApplicationShortcuts" Guid="0C1E1F9B-7983-4BAB-9C4C-C50D0537967C" Directory="ProgramMenuSubfolder">
+		<Shortcut Id="ApplicationShortcut1" Name="$(var.ProductName)"
+				Target="[INSTALLDIR]ValorantDiscordPresence.exe" WorkingDirectory="INSTALLDIR"/>
+		<RegistryValue Root="HKCU" Key="SOFTWARE\$(var.ManufacturerName)\$(var.ProductName)"
+				Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		<RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
+	</Component>
+</Include>

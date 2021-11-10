@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<?include Vars.wxi ?>
+	<Product Id="*" UpgradeCode="D0DFB15B-BBD7-425B-AC2C-4C2019BB7D83"
+            Name="$(var.ProductName)" Version="0.3.1" Manufacturer="$(var.ManufacturerName)" Language="1033">
+		<Package InstallerVersion="200" Compressed="yes" Comments="Windows Installer for $(var.ProductName)"/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed."/>
+		<Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
+
+		<Feature Id="DefaultFeature" Level="0">
+			<ComponentGroupRef Id="ApplicationFiles"/>
+			<ComponentRef Id="ApplicationShortcuts"/>
+		</Feature>
+		
+		<?include UI.wxi ?>
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+		<Property Id="INSTALLDIR">
+			<RegistrySearch Id="RegistrySearch" Type="raw" Root="HKLM" Key="SOFTWARE\$(var.ManufacturerName)\$(var.ProductName)" Name="InstallLocation" />
+		</Property>
+		
+		<Icon Id="valorant.ico" SourceFile="..\..\discord-presence\valorant.ico" />
+		<Property Id="ARPPRODUCTICON" Value="valorant.ico" />
+		<Property Id="ARPHELPLINK" Value="https://github.com/jloh02/valorant-discord-presence/releases" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLDIR" Name="$(var.ProductName)"/>
+			</Directory>
+			<!--Start menu entry-->
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ProgramMenuSubfolder" Name="$(var.FolderName)"/>
+			</Directory>
+		</Directory>
+
+		<ComponentGroup Id="ApplicationFiles" Directory="INSTALLDIR">
+			<?include components\AppComponent.wxi ?>
+			<?include components\DiscordSdkComponent.wxi ?>
+			<?include components\LibCryptoComponent.wxi ?>
+			<?include components\LibSslComponent.wxi ?>
+		</ComponentGroup>
+	
+		<?include components\StartMenuComponent.wxi ?>
+	</Product>
+</Wix>
