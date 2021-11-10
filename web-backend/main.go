@@ -11,7 +11,7 @@ import (
 /*
 Local testing:
 go build -o bin/main.exe -v .
-heroku local web
+heroku local web -f=Procfile.local
 
 Deployment:
 go build -o bin/main -v .
