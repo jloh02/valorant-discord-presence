@@ -1,11 +1,12 @@
 #include "discord_handler.h"
 
-#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
-#define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
+//#define DEBUG_UPDATE_ACTIVITY	//Print intermediary debug statements when updating activity
+//#define DEBUG_ACTIVITY		//Print debug statements whenever using Discord SDK to update activity
 
 namespace disc {
 	namespace {
 		time_t timeStart;	//Used to track start of game
+		time_t timeAgentSelectEnd; //Track agent select page timing
 
 		//Global variables to prevent deleted pointers
 		discord::Core* core{};
@@ -86,12 +87,16 @@ namespace disc {
 					else {
 						//Agent select
 						if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "PREGAME")) {
-							if (strcmp(prevState.c_str(), "select")) valorant::getMatchID(true);
+							bool firstLoad = strcmp(prevState.c_str(), "select");
+							if (firstLoad) valorant::getMatchID(true);
 							prevState = "select";
 
 							valorant::GameData gd = valorant::getGameDetails(true);
-
-							updateActivity("Agent Select", gameType.c_str(), NULL, std::time(0) + (gd.timeLeft / 1000000000), gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
+							time_t updatedTime = std::time(0) + (gd.timeLeft / 1000000000);
+							//Only update time when inaccuracy>2s to prevent jittery updates
+							if (firstLoad || std::abs(timeAgentSelectEnd-updatedTime >= 2)) timeAgentSelectEnd = updatedTime; 
+							
+							updateActivity("Agent Select", gameType.c_str(), NULL, timeAgentSelectEnd, gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
 						}
 						//In game
 						else if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "INGAME")) {

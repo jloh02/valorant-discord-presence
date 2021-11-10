@@ -72,7 +72,6 @@ int main()
 	do {
 		if (!valorant::getPresence()) {
 			std::cout << "Can't get presence\n";
-			continue;
 		}
 
 		discord::Result cbRes = state.core->RunCallbacks();
