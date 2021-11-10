@@ -2,17 +2,22 @@ export async function joinParty (username, password) {
     console.log(username)
     console.log(password)
 
-    /*const data = {"client_id":"play-valorant-web-prod","nonce":"1","redirect_uri":"https://playvalorant.com/opt_in","response_type":"token id_token"}
-    var cookie_res = await fetch('https://auth.riotgames.com/api/v1/authorization',{
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        //'Accept': 'application/json', 
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
+    const req = {
+      "username":username,
+      "password":password,
+      "party_id":this.$route.query.party,
+      "region":this.$route.query.region,
+      "puuid":this.$route.query.puuid,
+    }
 
-    console.log(cookie_res.json())*/
+    var res = await fetch('https://valorant-invite.herokuapp.com/join',{
+      method: 'POST',
+      //headers: {
+        //'Accept': 'application/json', 
+        //'Content-Type': 'application/json'
+      //},
+      body: JSON.stringify(req)
+    })
+    console.log(res.status)
     return true;
 }
