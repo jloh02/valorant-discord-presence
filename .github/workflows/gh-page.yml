@@ -7,19 +7,24 @@ on:
     branches:
       - main
       - v0.3
+    paths:
+      - 'webpage/**'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
-
+      
       - name: Install and Build 🔧
         run: |
+          cd webpage
           npm install
           npm run build
+          ls
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages
+          folder: webpage/dist
