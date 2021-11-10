@@ -112,6 +112,11 @@
     <Image Include="..\valorant.ico" />
     <Image Include="icon1.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\discord-presence-wix-installer\Setup\Setup.wixproj">
+      <Project>{97956ad1-022f-4b4c-b835-06eccfadf82b}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
