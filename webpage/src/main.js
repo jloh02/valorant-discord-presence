@@ -1,6 +1,17 @@
-import { createApp } from 'vue'
-import Main from './Main.vue'
+import { createApp } from 'vue/dist/vue.esm-bundler'
+import { createRouter, createWebHistory } from 'vue-router'
+import Main from './components/Main.vue'
+import App from './App.vue'
 
-const app = createApp(Main)
+const app = createApp(App)
 
-app.mount('#main')
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+   { path: '/', component: Main } 
+  ]
+})
+
+app.use(router)
+
+app.mount('#app')

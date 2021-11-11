@@ -31,13 +31,19 @@
 </template>
 
 <script>
-import { joinParty } from "@/join_party.js";
 import AuthInput from "./AuthInput.vue";
 import Loading from "./Loading.vue";
+import { useRoute } from "vue-router";
+
+var queryParams;
 
 export default {
   name: "Auth",
   components: { AuthInput, Loading },
+  setup() {
+    const route = useRoute();
+    queryParams = route.query;
+  },
   data() {
     return {
       username: "",
@@ -56,15 +62,23 @@ export default {
     },
     submit() {
       this.loading = true;
-      console.log(this.loading);
       this.error = false;
-      if (
-        this.username.length == 0 ||
-        this.password.length == 0 ||
-        !joinParty(this.username, this.password)
-      )
+      if (this.username.length == 0 || this.password.length == 0) {
         this.error = true;
-      else this.success = true;
+        this.loading = false;
+        return;
+      }
+      
+      const res = joinParty(this.username, this.password)
+      switch(res){
+        case 200:
+          this.success = true
+          break
+        default:
+          this.success = false
+          console.log(res)
+          break
+      }
 
       setTimeout(() => {
         this.loading = false;
@@ -75,6 +89,31 @@ export default {
     //joinParty(); localhost
   },
 };
+
+async function joinParty(username, password) {
+  console.log(queryParams);
+  console.log(username);
+  console.log(password);
+
+  const req = {
+    username: username,
+    password: password,
+    party_id: queryParams.party,
+    region: queryParams.region,
+    puuid: queryParams.puuid,
+  };
+
+  var res = await fetch("https://valorant-invite.herokuapp.com/join", {
+    method: "POST",
+    //headers: {
+    //'Accept': 'application/json',
+    //'Content-Type': 'application/json'
+    //},
+    body: JSON.stringify(req),
+  });
+  console.log(res.status);
+  return res.status;
+}
 </script>
 
 <style>

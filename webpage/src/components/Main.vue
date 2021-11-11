@@ -6,24 +6,29 @@
 </template>
 
 <script>
-import Auth from './components/Auth.vue'
-import BottomBanner from './components/BottomBanner.vue'
+import Auth from "./Auth.vue";
+import BottomBanner from "./BottomBanner.vue";
+import { useRoute } from "vue-router";
 
 export default {
-  name: 'Main',
+  name: "Main",
   components: {
     Auth,
-    BottomBanner
-  }
-}
+    BottomBanner,
+  },
+  setup() {
+    const route = useRoute();
+    console.log(route.query);
+  },
+};
 </script>
 
 <style>
-.main { 
-  font-family: Roboto, 'FF Mark W05', sans-serif;
+.main {
+  font-family: Roboto, "FF Mark W05", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('~@/assets/background.jpg');
+  background-image: url("~@/assets/background.jpg");
   background-size: cover;
   margin: 0;
   top: 0;
