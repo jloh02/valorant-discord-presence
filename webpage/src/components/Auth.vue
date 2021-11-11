@@ -91,10 +91,6 @@ export default {
 };
 
 async function joinParty(username, password) {
-  console.log(queryParams);
-  console.log(username);
-  console.log(password);
-
   const req = {
     username: username,
     password: password,
@@ -105,10 +101,6 @@ async function joinParty(username, password) {
 
   var res = await fetch("https://valorant-invite.herokuapp.com/join", {
     method: "POST",
-    //headers: {
-    //'Accept': 'application/json',
-    //'Content-Type': 'application/json'
-    //},
     body: JSON.stringify(req),
   });
   console.log(res.status);
