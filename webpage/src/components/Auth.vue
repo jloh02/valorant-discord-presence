@@ -19,7 +19,7 @@
           @on-field-input="updatePassword"
         />
       </form>
-      <p v-if="error" class="error-msg">Invalid username or password</p>
+      <p v-if="error" class="error-msg">{{ errorText }}</p>
       <div class="button-container">
         <button v-if="!this.success && !this.loading" @click="submit">
           Sign In
@@ -51,6 +51,7 @@ export default {
       loading: false,
       error: false,
       success: false,
+      errorText: "",
     };
   },
   methods: {
@@ -68,21 +69,32 @@ export default {
         this.loading = false;
         return;
       }
-      
-      const res = joinParty(this.username, this.password)
-      switch(res){
-        case 200:
-          this.success = true
-          break
-        default:
-          this.success = false
-          console.log(res)
-          break
-      }
 
-      setTimeout(() => {
+      const resFuture = joinParty(this.username, this.password);
+      resFuture.then((res) => {
+        if (res.ok) this.success = true;
+        else {
+          this.success = false;
+          this.errorText = res.body;
+          /*switch (res.status) {
+            case 401:
+              errorText = "Invalid username or password";
+              break;
+            case 404:
+              if (res.body === "PLAYER_DOES_NOT_EXIST")
+                errorText = "Invalid username or password";
+              else
+                errorText =
+                  "Login domain not found. Please contact the administrator.";
+              break;
+            default:
+              errorText =
+                "An unknown error occured. Please contact the developer if this error persist.";
+              break;
+          }*/
+        }
         this.loading = false;
-      }, 1000);
+      });
     },
   },
   created() {
@@ -103,8 +115,8 @@ async function joinParty(username, password) {
     method: "POST",
     body: JSON.stringify(req),
   });
-  console.log(res.status);
-  return res.status;
+
+  return res;
 }
 </script>
 
