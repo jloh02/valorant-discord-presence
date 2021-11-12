@@ -11,7 +11,7 @@ import (
 /*
 Local testing:
 go build -o bin/main.exe -v .
-heroku local web -f=Procfile.local
+heroku local web -f="Procfile.local"
 
 Deployment:
 go build -o bin/main -v .
@@ -58,6 +58,7 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Auth error, %v", err)
 		w.WriteHeader(401)
+		w.Write([]byte(err.Error()))
 		return
 	}
 

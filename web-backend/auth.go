@@ -13,12 +13,12 @@ import (
 func Authenticate(client *http.Client, username string, password string) (valorantCredentials, error) {
 
 	if !GetCookies(client) {
-		return valorantCredentials{}, fmt.Errorf("error connecting cookies")
+		return valorantCredentials{}, fmt.Errorf("Unable to connect to server")
 	}
 
 	token, err := Login(client, username, password)
 	if err != nil {
-		return valorantCredentials{}, err
+		return valorantCredentials{}, fmt.Errorf(token) //Token field replaced with error msg
 	}
 	//fmt.Println(token)
 
@@ -64,17 +64,17 @@ func Login(client *http.Client, username string, password string) (string, error
 	}
 
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != 200 {
-		return "", err
-	}
-
 	body, _ := ioutil.ReadAll(resp.Body)
 	bodyStr := string(body)
 
+	if err != nil {
+		return "", err
+	} else if resp.StatusCode != 200 || strings.Contains(bodyStr, "auth_failure") {
+		return "Invalid username or password", fmt.Errorf("invalid credentials")
+	}
+
 	const searchFieldStart = "access_token="
 	const searchFieldEnd = "&scope="
-
-	fmt.Print(bodyStr)
 
 	return "Bearer " + bodyStr[strings.Index(bodyStr, searchFieldStart)+len(searchFieldStart):strings.Index(bodyStr, searchFieldEnd)], nil
 }

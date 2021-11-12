@@ -22,6 +22,7 @@ func partyjoin(client *http.Client, w http.ResponseWriter, r *http.Request, cred
 		log.Print(message)
 	}
 
+	w.WriteHeader(reqStatus)
 	w.Write(message)
 }
 
