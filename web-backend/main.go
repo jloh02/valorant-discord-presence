@@ -33,6 +33,11 @@ func main() {
 }
 
 func JoinParty(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "https://jloh02.github.io/valorant-discord-presence")
+	w.Header().Add("Access-Control-Allow-Credentials", "true")
+	w.Header().Add("Access-Control-Allow-Headers", "")
+	w.Header().Add("Access-Control-Allow-Methods", "POST")
+
 	req, valid := ValidateRequest(w, r)
 	if !valid {
 		return
