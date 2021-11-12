@@ -30,3 +30,9 @@ type userinfo struct {
 	PUUID string `json:"sub"`
 	JTI   string `json:"jti"`
 }
+
+type partyJoinResponse struct {
+	HttpStatus string `json:"httpStatus"`
+	ErrorCode  string `json:"errorCode"`
+	Message    string `json:"message"`
+}

@@ -54,13 +54,13 @@ func Login(client *http.Client, username string, password string) (string, error
 	authParamsBytes, err := json.Marshal(authParams)
 	if err != nil {
 		log.Printf("Json parsing error, %v", err)
-		return "", err
+		return "Reload the page and try again", err
 	}
 
 	req, err := http.NewRequest(http.MethodPut, "https://auth.riotgames.com/api/v1/authorization", bytes.NewBuffer(authParamsBytes))
 	req.Header.Add("Content-Type", "application/json")
 	if err != nil {
-		return "", err
+		return "Reload the page and try again", err
 	}
 
 	resp, err := client.Do(req)

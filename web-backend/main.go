@@ -40,6 +40,8 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 
 	req, valid := ValidateRequest(w, r)
 	if !valid {
+		w.WriteHeader(422)
+		w.Write([]byte("Invalid invite link"))
 		return
 	}
 
@@ -47,6 +49,7 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Cookie initialization error, %v", err)
 		w.WriteHeader(500)
+		w.Write([]byte("Reload the page and try again"))
 		return
 	}
 
@@ -62,5 +65,8 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	partyjoin(client, w, r, creds, req)
+	status, msg := partyjoin(client, r, creds, req)
+
+	w.WriteHeader(status)
+	w.Write(msg)
 }
