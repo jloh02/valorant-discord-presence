@@ -18,10 +18,7 @@ func partyjoin(client *http.Client, w http.ResponseWriter, r *http.Request, cred
 		reqStatus, message = join(fmt.Sprintf("/players/%s/joinparty/%s", creds.PUUID, req.PartyId), client, r, creds, req)
 	}
 
-	if reqStatus != 200 {
-		log.Print(message)
-	}
-
+	log.Print(string(message))
 	w.WriteHeader(reqStatus)
 	w.Write(message)
 }
