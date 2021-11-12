@@ -74,6 +74,8 @@ func Login(client *http.Client, username string, password string) (string, error
 	const searchFieldStart = "access_token="
 	const searchFieldEnd = "&scope="
 
+	fmt.Print(bodyStr)
+
 	return "Bearer " + bodyStr[strings.Index(bodyStr, searchFieldStart)+len(searchFieldStart):strings.Index(bodyStr, searchFieldEnd)], nil
 }
 
