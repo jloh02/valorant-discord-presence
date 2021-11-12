@@ -8,7 +8,11 @@ const app = createApp(App)
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-   { path: '/', component: Main } 
+    {
+      path: '/',
+      redirect: { name: 'Main' }
+    },
+   { path: '/valorant-discord-presence/', component: Main, name: 'Main' } 
   ]
 })
 
