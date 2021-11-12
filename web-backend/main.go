@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"os"
+	"strings"
 )
 
 /*
@@ -47,7 +48,7 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		log.Printf("Cookie initialization error, %v", err)
+		//log.Printf("Cookie initialization error, %v", err)
 		w.WriteHeader(500)
 		w.Write([]byte("Reload the page and try again"))
 		return
@@ -59,7 +60,7 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 
 	creds, err := Authenticate(client, req.Username, req.Password)
 	if err != nil {
-		log.Printf("Auth error, %v", err)
+		//log.Printf("Auth error, %v", err)
 		w.WriteHeader(401)
 		w.Write([]byte(err.Error()))
 		return
@@ -68,5 +69,12 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 	status, msg := partyjoin(client, r, creds, req)
 
 	w.WriteHeader(status)
-	w.Write(msg)
+
+	errorMsg := "An unknown error occured. Please contact the developer if this error persist."
+	if strings.Compare(msg, "PARTY_NOT_FOUND") == 0 {
+		errorMsg = "Party not found. Are you in the same region as the party leader?"
+	} else if strings.Compare(msg, "PLAYER_DOES_NOT_EXIST") == 0 {
+		errorMsg = "Player not found. Are you sure you are online?"
+	}
+	w.Write([]byte(errorMsg))
 }

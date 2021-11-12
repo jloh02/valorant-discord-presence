@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func partyjoin(client *http.Client, r *http.Request, creds valorantCredentials, req valorantRequest) (int, []byte) {
+func partyjoin(client *http.Client, r *http.Request, creds valorantCredentials, req valorantRequest) (int, string) {
 	//Request to join
 	reqStatus, ret := join(fmt.Sprintf("/parties/%s/request", req.PartyId), client, r, creds, req)
 
@@ -25,7 +25,7 @@ func partyjoin(client *http.Client, r *http.Request, creds valorantCredentials, 
 		ret.ErrorCode = "Unknown error has occured"
 	}
 
-	return reqStatus, []byte(ret.ErrorCode)
+	return reqStatus, ret.ErrorCode
 }
 
 func join(endpoint string, client *http.Client, r *http.Request, creds valorantCredentials, req valorantRequest) (int, partyJoinResponse) {
