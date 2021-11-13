@@ -21,7 +21,7 @@
       </form>
       <p v-if="error" class="error-msg">{{ errorText }}</p>
       <div class="button-container">
-        <button v-if="!this.success && !this.loading" @click="submit">
+        <button v-if="!this.success && !this.loading" @click="submit" class="login-button">
           Sign In
         </button>
         <loading v-else />
@@ -136,8 +136,8 @@ div.button-container {
   justify-content: space-around;
 }
 
-button {
-  background-color: #ff4655; /* Green */
+button.login-button {
+  background-color: #ff4655;
   border: none;
   color: whitesmoke;
   padding: 15px 32px;
@@ -148,7 +148,7 @@ button {
   border-radius: 10px;
 }
 
-button:hover {
+button.login-button:hover {
   background-color: #ea3241;
 }
 
