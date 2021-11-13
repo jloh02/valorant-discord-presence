@@ -4,7 +4,7 @@
       <input :type="inputType" @input="onInput" :alt="label" required />
       <span class="input-label">{{ label }}</span>
       <button
-        v-if="label === 'Password'"
+        v-if="label === 'Password' && currentInput"
         @click="showHidePw"
         class="show-hide-button"
         type="button"
@@ -48,17 +48,17 @@ export default {
   name: "AuthInput",
   data() {
     return {
-      hidden: false,
       inputType: this.type,
+      currentInput: "",
     };
   },
   props: ["label", "type", "fieldInput"],
   methods: {
     onInput(v) {
+      this.currentInput = v.target.value;
       this.$emit("on-field-input", v.target.value);
     },
     showHidePw() {
-      this.hidden = !this.hidden;
       this.inputType = this.inputType === "password" ? "text" : "password";
     },
   },
