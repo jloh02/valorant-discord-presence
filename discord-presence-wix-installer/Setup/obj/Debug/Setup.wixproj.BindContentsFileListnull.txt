@@ -1,4 +1,0 @@
-..\..\discord-presence\ValorantDiscordPresence\discord_game_sdk.dll
-..\..\discord-presence\ValorantDiscordPresence\libcrypto-1_1-x64.dll
-..\..\discord-presence\ValorantDiscordPresence\libssl-1_1-x64.dll
-D:\Users\Jonathan\Documents\DiscordPresences\ValorantDiscordPresence\discord-presence\x64\Debug\ValorantDiscordPresence.exe
