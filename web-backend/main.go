@@ -70,11 +70,13 @@ func JoinParty(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(status)
 
-	errorMsg := "An unknown error occured. Please contact the developer if this error persist."
-	if strings.Compare(msg, "PARTY_NOT_FOUND") == 0 {
-		errorMsg = "Party not found. Are you in the same region as the party leader?"
-	} else if strings.Compare(msg, "PLAYER_DOES_NOT_EXIST") == 0 {
-		errorMsg = "Player not found. Are you sure you are online?"
+	if status != 200 {
+		errorMsg := "An unknown error occured. Please contact the developer if this error persist."
+		if strings.Compare(msg, "PARTY_NOT_FOUND") == 0 {
+			errorMsg = "Party not found.\nAre you in the same region as the party leader?"
+		} else if strings.Compare(msg, "PLAYER_DOES_NOT_EXIST") == 0 {
+			errorMsg = "Player not found.\nAre you sure you are online?"
+		}
+		w.Write([]byte(errorMsg))
 	}
-	w.Write([]byte(errorMsg))
 }
