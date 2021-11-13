@@ -8,17 +8,12 @@
 <script>
 import Auth from "./Auth.vue";
 import BottomBanner from "./BottomBanner.vue";
-import { useRoute } from "vue-router";
 
 export default {
   name: "Main",
   components: {
     Auth,
     BottomBanner,
-  },
-  setup() {
-    const route = useRoute();
-    console.log(route.query);
   },
 };
 </script>
