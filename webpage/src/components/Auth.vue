@@ -66,34 +66,21 @@ export default {
       this.error = false;
       if (this.username.length == 0 || this.password.length == 0) {
         this.error = true;
+        this.errorText = "Invalid username or password";
         this.loading = false;
         return;
       }
 
-      const resFuture = joinParty(this.username, this.password);
-      resFuture.then((res) => {
-        if (res.ok) this.success = true;
-        else {
-          this.success = false;
-          this.errorText = res.body;
-          /*switch (res.status) {
-            case 401:
-              errorText = "Invalid username or password";
-              break;
-            case 404:
-              if (res.body === "PLAYER_DOES_NOT_EXIST")
-                errorText = "Invalid username or password";
-              else
-                errorText =
-                  "Login domain not found. Please contact the administrator.";
-              break;
-            default:
-              errorText =
-                "An unknown error occured. Please contact the developer if this error persist.";
-              break;
-          }*/
-        }
-        this.loading = false;
+      joinParty(this.username, this.password).then((res) => {
+        res.text().then((resBody) => {
+          if (res.ok) this.success = true;
+          else {
+            this.success = false;
+            this.error = true;
+            this.errorText = resBody;
+          }
+          this.loading = false;
+        });
       });
     },
   },
