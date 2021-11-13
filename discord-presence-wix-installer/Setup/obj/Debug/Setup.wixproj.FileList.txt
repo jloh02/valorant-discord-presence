@@ -1,6 +1,0 @@
-obj\Debug\Library.wixobj
-D:\Users\Jonathan\Documents\DiscordPresences\ValorantDiscordPresence\discord-presence-wix-installer\Setup\bin\Debug\Install VALORANT Discord Presence.msi
-D:\Users\Jonathan\Documents\DiscordPresences\ValorantDiscordPresence\discord-presence-wix-installer\Setup\bin\Debug\Install VALORANT Discord Presence.wixpdb
-obj\Debug\Setup.wixproj.BindContentsFileListnull.txt
-obj\Debug\Setup.wixproj.BindOutputsFileListnull.txt
-obj\Debug\Setup.wixproj.BindBuiltOutputsFileListnull.txt
