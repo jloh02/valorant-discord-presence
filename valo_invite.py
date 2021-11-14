@@ -22,4 +22,6 @@ for presence in presences['presences']:
     if presence['puuid'] == puuid:    # compares to the PUUID we got in the previous response to aviod setting someone else's state as our status
         party_id = json.loads(base64.b64decode(presence['private']))['partyId']
         
+print(partyId)
+print(puuid)
 print("https://jloh02.github.io/valorant-discord-presence?puuid={puuid}&party={party}&region={region}".format(party=party_id, puuid=puuid, region='ap'))
