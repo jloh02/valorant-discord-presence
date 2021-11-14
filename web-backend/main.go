@@ -9,15 +9,6 @@ import (
 	"strings"
 )
 
-/*
-Local testing:
-go build -o bin/main.exe -v .
-heroku local web -f="Procfile.local"
-
-Deployment:
-go build -o bin/main -v .
-*/
-
 func main() {
 	port := os.Getenv("PORT")
 
