@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -18,8 +17,6 @@ func partyjoin(client *http.Client, r *http.Request, creds valorantCredentials, 
 	if reqStatus == 400 && strings.Compare(ret.ErrorCode, "REQUEST_OPEN_PARTY") == 0 {
 		reqStatus, ret = join(fmt.Sprintf("/players/%s/joinparty/%s", creds.PUUID, req.PartyId), client, r, creds, req)
 	}
-
-	log.Print(ret.ErrorCode)
 
 	if reqStatus == 500 {
 		ret.ErrorCode = "Unknown error has occured"
