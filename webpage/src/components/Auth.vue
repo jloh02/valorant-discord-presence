@@ -5,6 +5,12 @@
         You have been invited to the party. You may now close this webpage.
       </p>
     </div>
+    <div v-else-if="loadingLocal">
+      <div class="button-container">
+        <loading />
+      </div>
+      <p class="completed-msg">Connecting to VALORANT Discord Presence...</p>
+    </div>
     <div v-else>
       <h3 class="auth-header">Sign In to <br />Riot Account</h3>
       <form novalidate>
@@ -21,7 +27,11 @@
       </form>
       <p v-if="error" class="error-msg">{{ errorText }}</p>
       <div class="button-container">
-        <button v-if="!this.success && !this.loading" @click="submit" class="login-button">
+        <button
+          v-if="!this.success && !this.loading"
+          @click="submit"
+          class="login-button"
+        >
           Sign In
         </button>
         <loading v-else />
@@ -31,9 +41,10 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useRoute } from "vue-router";
 import AuthInput from "./AuthInput.vue";
 import Loading from "./Loading.vue";
-import { useRoute } from "vue-router";
 
 var queryParams;
 
@@ -43,6 +54,16 @@ export default {
   setup() {
     const route = useRoute();
     queryParams = route.query;
+
+    const success = ref(false),
+      loadingLocal = ref(true);
+
+    joinLocal(success, loadingLocal);
+
+    return {
+      success,
+      loadingLocal,
+    };
   },
   data() {
     return {
@@ -50,7 +71,6 @@ export default {
       password: "",
       loading: false,
       error: false,
-      success: false,
       errorText: "",
     };
   },
@@ -84,10 +104,36 @@ export default {
       });
     },
   },
-  created() {
-    //joinParty(); localhost
-  },
 };
+
+async function joinLocal(success, loadingLocal) {
+  const localPort = 36886;
+  try {
+    var pingRes = await fetch(`http://localhost:${localPort}/ping`);
+    var pingBody = await pingRes.text();
+    if (pingBody !== "pong") {
+      success.value = false;
+      loadingLocal.value = false;
+      return;
+    }
+  } catch (e) {
+    success.value = false;
+    loadingLocal.value = false;
+    return;
+  }
+
+  const req = {
+    party: queryParams.party,
+    puuid: queryParams.puuid,
+  };
+  var res = await fetch(`http://localhost:${localPort}/join`, {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+
+  success.value = res.ok;
+  loadingLocal.value = false;
+}
 
 async function joinParty(username, password) {
   const req = {
