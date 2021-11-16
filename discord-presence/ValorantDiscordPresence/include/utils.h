@@ -10,6 +10,8 @@
 #include <fstream>
 #include <format>
 
+inline std::string valorantCmd;
+
 void startValorantApplication();
 bool isValorantClosed();
 void popup(const char* text);

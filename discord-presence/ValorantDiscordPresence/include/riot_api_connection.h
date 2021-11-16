@@ -28,4 +28,8 @@ namespace valorant {
 
 	void getMatchID(bool pregame);
 	GameData getGameDetails(bool pregame);
+
+	namespace invite {
+		std::pair<int, std::string> joinParty(std::string partyId, std::string ownerPuuid);
+	}
 }

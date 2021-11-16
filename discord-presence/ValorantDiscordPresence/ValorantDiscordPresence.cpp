@@ -24,13 +24,13 @@ namespace
 
 int main()
 {
-	/*if (!server::initialize()) {
+	std::thread serverThread;
+	if (!server::initialize()) {
 		std::cerr << "Unable to find available IP port\n";
 		popup("Unable to start invitation server. Invite to party functionality may be limited.");
 	} else {
-		std::thread serverThread(server::listenAsync);
-	}*/
-	
+		serverThread = std::thread(server::listenAsync);
+	}	
 
 	/*
 	discord::LobbyTransaction lobby{};
@@ -62,9 +62,8 @@ int main()
 		});
 		*/
 
-	disc::initialize();
-
 	startValorantApplication();
+	disc::initialize();
 	valorant::initialize();
 
 	std::signal(SIGINT, [](int) { interrupted = true; });

@@ -6,9 +6,9 @@
 #include <format>
 
 #include "utils.h"
+#include "riot_api_connection.h"
 
 #include "discord-sdk/discord.h"
-#include "riot_api_connection.h"
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -27,5 +27,5 @@ inline DiscordState state;
 namespace disc {
 	void initialize();
 	void updateActivity(rapidjson::GenericArray<false, rapidjson::Value> presences);
-	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg);
+	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, const char* partyId, int partySize, int partyCapacity);
 }

@@ -5,10 +5,11 @@
 
 #include "httplib/httplib.h"
 
-#define MIN_PORT 36888
-#define NUM_PORTS 100
+#include "riot_api_connection.h"
 
-namespace server{
+#define LOCAL_PORT 36886
+
+namespace server {
 	bool initialize();
 	void listenAsync();
 	void stop();

@@ -168,4 +168,35 @@ namespace valorant {
 
 		return { agent, map , pregame ? (pregameDoc.FindMember("PhaseTimeRemainingNS")->value).GetUint64() : 0 };
 	}
+
+	namespace invite {
+		std::pair<int, std::string> remote_post_connect(std::string endpoint, std::string ownerPuuid) {
+			httplib::Client cli(std::format("https://glz-{}-1.{}.a.pvp.net", credentials["region"], credentials["region"]));
+			cli.enable_server_certificate_verification(false);
+			httplib::Headers headers = {
+				{ "Content-Type", "application/json"},
+				{ "X-Riot-Entitlements-JWT", credentials["entitlement"]},
+				{ "Authorization", credentials["bearerToken"]}
+			};
+
+			httplib::Params params;
+			params.emplace("Subjects", std::format("[\"{}\"]", ownerPuuid));
+
+			auto res = cli.Post(endpoint.c_str(), headers, params);
+
+			rapidjson::Document resDoc;
+			resDoc.Parse(res->body.c_str());
+			return { res->status , (resDoc.FindMember("errorCode")->value).GetString() };
+		}
+
+		std::pair<int, std::string> joinParty(std::string partyId, std::string ownerPuuid) {
+			getToken();
+			std::pair<int, std::string> res = remote_post_connect(std::format("/parties/v1/parties/{}/request", partyId), ownerPuuid);
+
+			if (res.first == 400 && res.second == "REQUEST_OPEN_PARTY")
+				res = remote_post_connect(std::format("/parties/v1/players/{}/joinparty/{}", credentials["puuid"], partyId), ownerPuuid);
+
+			return res;
+		}
+	}
 }

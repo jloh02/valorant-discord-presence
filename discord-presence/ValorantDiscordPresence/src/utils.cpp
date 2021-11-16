@@ -3,6 +3,8 @@
 namespace {
 	PROCESS_INFORMATION pi;
 	HANDLE valorantPHandle = 0;
+
+	std::wstring regCmd;
 }
 
 bool openExistingValorantApplication() { //returns true if already open
@@ -36,7 +38,7 @@ bool openExistingValorantApplication() { //returns true if already open
 	return true;
 }
 
-LONG getRiotClientPath(std::wstring& output){
+LONG getRiotClientPath(){
 	HKEY hKey;
 	LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Riot Game valorant.live", 0, KEY_READ, &hKey);
 	if (ERROR_SUCCESS != lRes) return lRes;
@@ -45,7 +47,7 @@ LONG getRiotClientPath(std::wstring& output){
 	DWORD dwBufferSize = sizeof(szBuffer);
 	ULONG nError;
 	nError = RegQueryValueExW(hKey, L"UninstallString", 0, NULL, (LPBYTE)szBuffer, &dwBufferSize);
-	if (ERROR_SUCCESS == nError) output = szBuffer;
+	if (ERROR_SUCCESS == nError) regCmd = szBuffer;
 	return nError;
  }
 
@@ -53,16 +55,15 @@ void startValorantApplication() {
 	if (openExistingValorantApplication()) return;
 	std::cout << "Launching valorant...\n";
 
-	std::wstring regCmd;
-	LONG regReadRes = getRiotClientPath(regCmd);
+	LONG regReadRes = getRiotClientPath();
 	if (ERROR_SUCCESS != regReadRes) {
 		popup("Unable to find VALORANT application. Please ensure the game is installed and attempt to launch the application again.");
 		exit(0);
 	}
 	regCmd = regCmd.substr(0, regCmd.find(L" --uninstall"));
 
-	std::string cmd(regCmd.begin(),regCmd.end());
-	cmd = std::format("{} --launch-product=valorant --launch-patchline=live", cmd);
+	valorantCmd = std::string(regCmd.begin(),regCmd.end());
+	valorantCmd = std::format("{} --launch-product=valorant --launch-patchline=live", valorantCmd);
 
 	STARTUPINFOA si;
 
@@ -72,16 +73,16 @@ void startValorantApplication() {
 
 	if (!CreateProcessA
 	(
-		NULL,					// No module name (use command line)
-		_strdup(cmd.c_str()),	// Command to launch application
-		NULL,					// Process handle not inheritable
-		NULL,					// Thread handle not inheritable
-		FALSE,					// Set handle inheritance to FALSE
-		0,						// No creation flags
-		NULL,					// Use parent's environment block
-		NULL,					// Use parent's starting directory
-		&si,					// Pointer to STARTUPINFO structure
-		&pi						// Pointer to PROCESS_INFORMATION structure
+		NULL,							// No module name (use command line)
+		_strdup(valorantCmd.c_str()),	// Command to launch application
+		NULL,							// Process handle not inheritable
+		NULL,							// Thread handle not inheritable
+		FALSE,							// Set handle inheritance to FALSE
+		0,								// No creation flags
+		NULL,							// Use parent's environment block
+		NULL,							// Use parent's starting directory
+		&si,							// Pointer to STARTUPINFO structure
+		&pi								// Pointer to PROCESS_INFORMATION structure
 	)) {
 		popup("Unable to start VALORANT.exe. Please try to launch the application again.");
 		printf("CreateProcess failed (%d)\n", GetLastError());

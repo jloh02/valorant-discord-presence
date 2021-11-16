@@ -4,31 +4,31 @@ namespace server {
 	httplib::Server svr;
 
 	bool initialize() {
-		svr.Get("/hi", [](const httplib::Request& req, httplib::Response& res) {
-			res.set_content("Hello World!", "text/plain");
-		});
-		svr.Get(R"(/numbers/(\d+))", [&](const httplib::Request& req, httplib::Response& res) {
-			auto numbers = req.matches[1];
-			res.set_content(numbers, "text/plain");
+		svr.Get("/ping", [](const httplib::Request& req, httplib::Response& res) {
+			res.set_header("Access-Control-Allow-Origin", "https://jloh02.github.io");
+			res.set_content("pong", "text/plain");
 			});
+		svr.Post("/join", [](const httplib::Request& req, httplib::Response& res) {
+			res.set_header("Access-Control-Allow-Origin", "https://jloh02.github.io");
+			rapidjson::Document reqDoc;
+			reqDoc.Parse(req.body.c_str());
 
-		svr.Get("/body-header-param", [](const httplib::Request& req, httplib::Response& res) {
-			if (req.has_header("Content-Length")) {
-				auto val = req.get_header_value("Content-Length");
+			std::pair<int, std::string> r = valorant::invite::joinParty((reqDoc.FindMember("party")->value).GetString(), (reqDoc.FindMember("puuid")->value).GetString());
+			if (r.first != 200) {
+				if (r.second == "PARTY_NOT_FOUND")
+					r.second = "Party not found.\nAre you in the same region as the party leader?";
+				else if (r.second == "PLAYER_DOES_NOT_EXIST")
+					r.second = "Player not found.\nAre you sure you are online?";
+				else if (r.second == "INTERNAL_UNHANDLED_SERVER_ERROR")
+					r.second = "Internal server error. Stop trying to join your own party!";
+				else
+					r.second = "An unknown error occured. Please contact the developer if this error persist.";
 			}
-			if (req.has_param("key")) {
-				auto val = req.get_param_value("key");
-			}
-			res.set_content(req.body, "text/plain");
+
+			res.status = r.first;
+			res.set_content(r.second, "text/plain");
 			});
-		svr.Post("/invite", [](const httplib::Request& req, httplib::Response& res) {
-
-		});
-		int port = MIN_PORT;
-		while (!svr.bind_to_port("localhost", port) && port < MIN_PORT + NUM_PORTS) port++;
-		std::cout << port << std::endl;
-
-		return (port < MIN_PORT + NUM_PORTS);
+		return svr.bind_to_port("localhost", LOCAL_PORT);
 	}
 
 	void listenAsync() {

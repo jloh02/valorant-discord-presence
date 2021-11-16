@@ -36,11 +36,14 @@ namespace disc {
 			discord::LogLevel::Debug, [](discord::LogLevel level, const char* message)
 			{ std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
 
+		state.core->ActivityManager().RegisterCommand(valorantCmd.c_str());
+
 		//Default load-in activity status
 		state.activity->GetAssets().SetLargeText("");
 		state.activity->GetAssets().SetSmallText("");
 		state.activity->SetType(discord::ActivityType::Playing);
-		disc::updateActivity("", "Loading In...", NULL, NULL, "", "valorant_icon");
+		disc::updateActivity("", "Loading In...", NULL, NULL, "", "valorant_icon", "", 0, 0);
+
 
 		discord::Result cbRes = state.core->RunCallbacks();
 		if (cbRes != discord::Result::Ok) {
@@ -65,10 +68,10 @@ namespace disc {
 				if (strlen(gameType.c_str()) == 0) gameType = "Custom";
 
 				if (presenceDoc["isIdle"].GetBool()) //Idle state
-					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon");
+					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon", presenceDoc["partyId"].GetString(), presenceDoc["partySize"].GetInt(), presenceDoc["maxPartySize"].GetInt());
 				else {
 					if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "MENUS")) { //In lobby
-						bool isQueue = !strcmp(presenceDoc["partyState"].GetString(),"MATCHMAKING");
+						bool isQueue = !strcmp(presenceDoc["partyState"].GetString(), "MATCHMAKING");
 
 						if (isQueue && strcmp(prevState.c_str(), "queue")) timeStart = std::time(0);
 						prevState = isQueue ? "queue" : "menu";
@@ -81,7 +84,10 @@ namespace disc {
 							isQueue ? timeStart : NULL,
 							NULL,
 							"",
-							"valorant_icon"
+							"valorant_icon",
+							presenceDoc["partyId"].GetString(),
+							presenceDoc["partySize"].GetInt(),
+							presenceDoc["maxPartySize"].GetInt()
 						);
 					}
 					else {
@@ -94,9 +100,19 @@ namespace disc {
 							valorant::GameData gd = valorant::getGameDetails(true);
 							time_t updatedTime = std::time(0) + (gd.timeLeft / 1000000000);
 							//Only update time when inaccuracy>2s to prevent jittery updates
-							if (firstLoad || std::abs(timeAgentSelectEnd-updatedTime >= 2)) timeAgentSelectEnd = updatedTime; 
-							
-							updateActivity("Agent Select", gameType.c_str(), NULL, timeAgentSelectEnd, gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(), gd.mapID.c_str());
+							if (firstLoad || std::abs(timeAgentSelectEnd - updatedTime >= 2)) timeAgentSelectEnd = updatedTime;
+
+							updateActivity(
+								"Agent Select",
+								gameType.c_str(),
+								NULL,
+								timeAgentSelectEnd,
+								gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(),
+								gd.mapID.c_str(),
+								presenceDoc["partyId"].GetString(),
+								presenceDoc["partySize"].GetInt(),
+								presenceDoc["maxPartySize"].GetInt()
+							);
 						}
 						//In game
 						else if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "INGAME")) {
@@ -108,8 +124,8 @@ namespace disc {
 
 							valorant::GameData gd = valorant::getGameDetails(false);
 
-							if (gd.mapID == "range" || gd.mapID.empty()) //In range
-								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range");
+							if (presenceDoc["provisioningFlow"].GetString() == "ShootingRange") //In range
+								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range", presenceDoc["partyId"].GetString(), presenceDoc["partySize"].GetInt(), presenceDoc["maxPartySize"].GetInt());
 							else {	//Online game
 								updateActivity(
 									std::format("{} ({} {})",
@@ -121,7 +137,10 @@ namespace disc {
 									timeStart,
 									NULL,
 									gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(),
-									gd.mapID.c_str()
+									gd.mapID.c_str(),
+									presenceDoc["partyId"].GetString(),
+									presenceDoc["partySize"].GetInt(),
+									presenceDoc["maxPartySize"].GetInt()
 								);
 							}
 						}
@@ -158,13 +177,19 @@ namespace disc {
 		std::cout << buffer.GetString() << std::endl;
 	}
 
-	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg) {
+	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, const char* partyId, int partySize, int partyCapacity) {
 		state.activity->SetState(actState);
 		state.activity->SetDetails(actDetails);
 		state.activity->GetTimestamps().SetStart(startT);
 		state.activity->GetTimestamps().SetEnd(endT);
 		state.activity->GetAssets().SetSmallImage(smallImg);
 		state.activity->GetAssets().SetLargeImage(largeImg);
+
+		state.activity->GetParty().SetId(partyId);
+		state.activity->GetParty().GetSize().SetCurrentSize(partySize);
+		state.activity->GetParty().GetSize().SetMaxSize(partyCapacity);
+		state.activity->GetSecrets().SetJoin(valorant::credentials["puuid"].c_str());
+
 #ifdef DEBUG_ACTIVITY
 		printActivity();
 #endif
@@ -174,6 +199,10 @@ namespace disc {
 			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
 			if (result != discord::Result::Ok) std::cout << static_cast<int>(result) << std::endl;
 #endif
-		});
+			});
+	}
+
+	void updateLobby() {
+
 	}
 }
