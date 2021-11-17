@@ -15,6 +15,8 @@
 #include "riot_api_connection.h"
 #include "web_server.h"
 
+#include "discord-rpc/discord_rpc.h"
+
 namespace
 {
 	volatile bool interrupted{ false };
@@ -30,40 +32,10 @@ int main()
 		popup("Unable to start invitation server. Invite to party functionality may be limited.");
 	} else {
 		serverThread = std::thread(server::listenAsync);
-	}	
-
-	/*
-	discord::LobbyTransaction lobby{};
-	state.core->LobbyManager().GetLobbyCreateTransaction(&lobby);
-	lobby.SetCapacity(2);
-	lobby.SetMetadata("foo", "bar");
-	lobby.SetMetadata("baz", "bat");
-	lobby.SetType(discord::LobbyType::Public);
-	state.core->LobbyManager().CreateLobby(
-		lobby, [&state](discord::Result result, discord::Lobby const& lobby)
-		{
-			if (result == discord::Result::Ok)
-			{
-				std::cout << "Created lobby with secret " << lobby.GetSecret() << "\n";
-				std::array<uint8_t, 234> data{};
-				state.core->LobbyManager().SendLobbyMessage(
-					lobby.GetId(),
-					reinterpret_cast<uint8_t*>(data.data()),
-					data.size(),
-					[](discord::Result result)
-					{
-						std::cout << "Sent message. Result: " << static_cast<int>(result) << "\n";
-					});
-			}
-			else
-			{
-				std::cout << "Failed creating lobby. (err " << static_cast<int>(result) << ")\n";
-			}
-		});
-		*/
-
+	}
+	
 	startValorantApplication();
-	disc::initialize();
+	disc::initialize(&interrupted);
 	valorant::initialize();
 
 	std::signal(SIGINT, [](int) { interrupted = true; });
@@ -71,11 +43,10 @@ int main()
 	do {
 		if (!valorant::getPresence()) {
 			std::cout << "Can't get presence\n";
+			Discord_ClearPresence();
 		}
 
-		discord::Result cbRes = state.core->RunCallbacks();
-		if (cbRes != discord::Result::Ok) //Unable to set presence
-			std::cout << "Discord error: " << static_cast<int>(cbRes) << std::endl;
+		Discord_RunCallbacks();
 
 		if (isValorantClosed()) {
 			std::cout << "Valorant Application Closed\n";
@@ -83,10 +54,6 @@ int main()
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	} while (!interrupted);
-
-	state.activity.release();
-	state.core.release();
-
-
-	//server::stop();
+	Discord_Shutdown();
+	server::stop();
 }
