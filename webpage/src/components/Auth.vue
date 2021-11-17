@@ -2,14 +2,8 @@
   <div class="auth-box">
     <div v-if="success">
       <p class="completed-msg">
-        You have been invited to the party. You may now close this webpage.
+        You have been invited to the party. You may now close this webpage.<br><br>If you would like to skip the login process, you may download the VALORANT Discord Presence <a href="https://github.com/jloh02/valorant-discord-presence/releases">here</a>.
       </p>
-    </div>
-    <div v-else-if="loadingLocal">
-      <div class="button-container">
-        <loading />
-      </div>
-      <p class="completed-msg">Connecting to VALORANT Discord Presence...</p>
     </div>
     <div v-else>
       <h3 class="auth-header">Sign In to <br />Riot Account</h3>
@@ -55,14 +49,11 @@ export default {
     const route = useRoute();
     queryParams = route.query;
 
-    const success = ref(false),
-      loadingLocal = ref(true);
-
-    joinLocal(success, loadingLocal);
+    const success = ref(false);
+    joinLocal(success);
 
     return {
       success,
-      loadingLocal,
     };
   },
   data() {
@@ -106,19 +97,17 @@ export default {
   },
 };
 
-async function joinLocal(success, loadingLocal) {
+async function joinLocal(success) {
   const localPort = 36886;
   try {
     var pingRes = await fetch(`http://localhost:${localPort}/ping`);
     var pingBody = await pingRes.text();
     if (pingBody !== "pong") {
       success.value = false;
-      loadingLocal.value = false;
       return;
     }
   } catch (e) {
     success.value = false;
-    loadingLocal.value = false;
     return;
   }
 
@@ -132,7 +121,6 @@ async function joinLocal(success, loadingLocal) {
   });
 
   success.value = res.ok;
-  loadingLocal.value = false;
 }
 
 async function joinParty(username, password) {
