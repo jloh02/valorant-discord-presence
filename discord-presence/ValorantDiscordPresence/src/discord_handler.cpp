@@ -5,52 +5,54 @@
 
 namespace disc {
 	namespace {
+		volatile bool* interruptFlag;
+
 		time_t timeStart;	//Used to track start of game
 		time_t timeAgentSelectEnd; //Track agent select page timing
-
-		//Global variables to prevent deleted pointers
-		discord::Core* core{};
-		discord::Activity act{};
+		std::string inviteLink;
 
 		std::string prevState; //"menu", "queue", "select", "game"
 	}
 
-	void initialize() {
-		discord::Result result = discord::Core::Create(886156186653687838, DiscordCreateFlags_NoRequireDiscord, &core);
-		if (result != discord::Result::Ok) {
-			std::cout << "Discord not opened/installed\n";
-			popup("Unable to connect to Discord. Please ensure that Discord is installed and opened.");
-			exit(0); //Exit if unable to connect to Discord (Not installed or closed)
-		}
-		state.core.reset(core);
-		state.activity.reset(&act);
 
-		if (!state.core)
-		{
-			std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
-				<< ")\n";
-			std::exit(0);
-		}
+	static void handleDiscordReady(const DiscordUser* connectedUser)
+	{
+		printf("\nDiscord: connected to user %s#%s - %s\n",
+			connectedUser->username,
+			connectedUser->discriminator,
+			connectedUser->userId);
+	}
 
-		state.core->SetLogHook(
-			discord::LogLevel::Debug, [](discord::LogLevel level, const char* message)
-			{ std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
+	static void handleDiscordDisconnected(int errcode, const char* message)
+	{
+		printf("\nDiscord: disconnected (%d: %s)\n", errcode, message);
+		*interruptFlag = true;
+	}
 
-		state.core->ActivityManager().RegisterCommand(valorantCmd.c_str());
+	static void handleDiscordError(int errcode, const char* message)
+	{
+		printf("\nDiscord: error (%d: %s)\n", errcode, message);
+	}
+
+	void initialize(volatile bool* interrupt) {
+		interruptFlag = interrupt;
+
+		DiscordEventHandlers handlers;
+		memset(&handlers, 0, sizeof(handlers));
+		handlers.ready = handleDiscordReady;
+		handlers.disconnected = handleDiscordDisconnected;
+		handlers.errored = handleDiscordError;
+		Discord_Initialize(APPLICATION_ID, &handlers, 1, NULL);
+
+		Discord_Register(APPLICATION_ID, valorantCmd.c_str());
 
 		//Default load-in activity status
-		state.activity->GetAssets().SetLargeText("");
-		state.activity->GetAssets().SetSmallText("");
-		state.activity->SetType(discord::ActivityType::Playing);
-		disc::updateActivity("", "Loading In...", NULL, NULL, "", "valorant_icon", "", 0, 0);
+		activity.largeImageText = "";
+		activity.smallImageText = "";
+		activity.type = DISCORD_ACTIVITY_PLAYING;
+		disc::updateActivity("", "Loading In...", NULL, NULL, "", "valorant_icon", false);
 
-
-		discord::Result cbRes = state.core->RunCallbacks();
-		if (cbRes != discord::Result::Ok) {
-			std::cout << "Unable to connect to Discord: " << static_cast<int>(cbRes) << std::endl;
-			popup("Unable to connect to Discord. Please restart Discord and try again.");
-			exit(0);
-		}
+		Discord_RunCallbacks();
 	}
 
 	void updateActivity(rapidjson::GenericArray<false, rapidjson::Value> presences) {
@@ -63,12 +65,14 @@ namespace disc {
 				presenceDoc.Parse(base64_decode(a["private"].GetString()).c_str());
 				if (presenceDoc.HasParseError() || !presenceDoc["isValid"].GetBool()) continue;
 
+				inviteLink = std::format("https://jloh02.github.io/valorant-discord-presence/?party={}&puuid={}&region={}", presenceDoc["partyId"].GetString(), valorant::credentials["puuid"], valorant::credentials["region"]);
+
 				std::string gameType = presenceDoc["queueId"].GetString();
 				gameType[0] = toupper(gameType[0]);
 				if (strlen(gameType.c_str()) == 0) gameType = "Custom";
 
 				if (presenceDoc["isIdle"].GetBool()) //Idle state
-					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon", presenceDoc["partyId"].GetString(), presenceDoc["partySize"].GetInt(), presenceDoc["maxPartySize"].GetInt());
+					updateActivity("", "Idle", NULL, NULL, "", "valorant_icon", presenceDoc["partySize"].GetInt() < presenceDoc["maxPartySize"].GetInt());
 				else {
 					if (!strcmp(presenceDoc["sessionLoopState"].GetString(), "MENUS")) { //In lobby
 						bool isQueue = !strcmp(presenceDoc["partyState"].GetString(), "MATCHMAKING");
@@ -85,9 +89,7 @@ namespace disc {
 							NULL,
 							"",
 							"valorant_icon",
-							presenceDoc["partyId"].GetString(),
-							presenceDoc["partySize"].GetInt(),
-							presenceDoc["maxPartySize"].GetInt()
+							presenceDoc["partySize"].GetInt() < presenceDoc["maxPartySize"].GetInt()
 						);
 					}
 					else {
@@ -109,9 +111,7 @@ namespace disc {
 								timeAgentSelectEnd,
 								gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(),
 								gd.mapID.c_str(),
-								presenceDoc["partyId"].GetString(),
-								presenceDoc["partySize"].GetInt(),
-								presenceDoc["maxPartySize"].GetInt()
+								presenceDoc["partySize"].GetInt() < presenceDoc["maxPartySize"].GetInt()
 							);
 						}
 						//In game
@@ -124,8 +124,8 @@ namespace disc {
 
 							valorant::GameData gd = valorant::getGameDetails(false);
 
-							if (presenceDoc["provisioningFlow"].GetString() == "ShootingRange") //In range
-								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range", presenceDoc["partyId"].GetString(), presenceDoc["partySize"].GetInt(), presenceDoc["maxPartySize"].GetInt());
+							if (!strcmp(presenceDoc["provisioningFlow"].GetString(), "ShootingRange")) //In range
+								updateActivity("In Range", "", timeStart, NULL, "valorant_icon", "range", presenceDoc["partySize"].GetInt() < presenceDoc["maxPartySize"].GetInt());
 							else {	//Online game
 								updateActivity(
 									std::format("{} ({} {})",
@@ -138,9 +138,7 @@ namespace disc {
 									NULL,
 									gd.agentID.empty() ? "valorant_icon" : gd.agentID.c_str(),
 									gd.mapID.c_str(),
-									presenceDoc["partyId"].GetString(),
-									presenceDoc["partySize"].GetInt(),
-									presenceDoc["maxPartySize"].GetInt()
+									presenceDoc["partySize"].GetInt() < presenceDoc["maxPartySize"].GetInt()
 								);
 							}
 						}
@@ -156,53 +154,48 @@ namespace disc {
 		rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 		writer.StartObject();
 		writer.String("state");
-		writer.String(state.activity->GetState());
+		writer.String(activity.state);
 		writer.String("details");
-		writer.String(state.activity->GetDetails());
+		writer.String(activity.details);
 		writer.String("timestamp");
 		writer.StartObject();
 		writer.String("start");
-		writer.Int64(state.activity->GetTimestamps().GetStart());
+		writer.Int64(activity.startTimestamp);
 		writer.String("end");
-		writer.Int64(state.activity->GetTimestamps().GetEnd());
+		writer.Int64(activity.endTimestamp);
 		writer.EndObject();
 		writer.String("assets");
 		writer.StartObject();
 		writer.String("small");
-		writer.String(state.activity->GetAssets().GetSmallImage());
+		writer.String(activity.smallImageKey);
 		writer.String("large");
-		writer.String(state.activity->GetAssets().GetLargeImage());
+		writer.String(activity.largeImageKey);
 		writer.EndObject();
 		writer.EndObject();
 		std::cout << buffer.GetString() << std::endl;
 	}
 
-	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, const char* partyId, int partySize, int partyCapacity) {
-		state.activity->SetState(actState);
-		state.activity->SetDetails(actDetails);
-		state.activity->GetTimestamps().SetStart(startT);
-		state.activity->GetTimestamps().SetEnd(endT);
-		state.activity->GetAssets().SetSmallImage(smallImg);
-		state.activity->GetAssets().SetLargeImage(largeImg);
+	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, bool inviteAvailable) {
+		activity.state = actState;
+		activity.details = actDetails;
+		activity.startTimestamp = startT;
+		activity.endTimestamp = endT;
+		activity.smallImageKey = smallImg;
+		activity.largeImageKey = largeImg;
 
-		state.activity->GetParty().SetId(partyId);
-		state.activity->GetParty().GetSize().SetCurrentSize(partySize);
-		state.activity->GetParty().GetSize().SetMaxSize(partyCapacity);
-		state.activity->GetSecrets().SetJoin(valorant::credentials["puuid"].c_str());
+		if (inviteAvailable) {
+			activity.buttonAlabel = "Request to Join";
+			activity.buttonAurl = inviteLink.c_str();
+		}
+		else {
+			activity.buttonAlabel = "";
+			activity.buttonAurl = "";
+		}
 
 #ifdef DEBUG_ACTIVITY
 		printActivity();
 #endif
-		//state.core->ActivityManager().ClearActivity([](discord::Result result) {});
-		state.core->ActivityManager().UpdateActivity(*(state.activity), [](discord::Result result) {
-#ifdef DEBUG_ACTIVITY
-			std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed") << " updating activity!\n";
-			if (result != discord::Result::Ok) std::cout << static_cast<int>(result) << std::endl;
-#endif
-			});
-	}
 
-	void updateLobby() {
-
+		Discord_UpdatePresence(&activity);
 	}
 }

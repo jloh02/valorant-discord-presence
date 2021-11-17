@@ -8,24 +8,20 @@
 #include "utils.h"
 #include "riot_api_connection.h"
 
-#include "discord-sdk/discord.h"
+#include "discord-rpc/discord_rpc.h"
+#include "discord-rpc/discord_register.h"
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h"
 
-struct DiscordState
-{
-	discord::User currentUser;
-	std::unique_ptr<discord::Activity> activity;
-	std::unique_ptr<discord::Core> core;
-};
+#define APPLICATION_ID "886156186653687838"
 
-inline DiscordState state;
+inline DiscordRichPresence activity;
 
 namespace disc {
-	void initialize();
+	void initialize(volatile bool* interrupt);
 	void updateActivity(rapidjson::GenericArray<false, rapidjson::Value> presences);
-	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, const char* partyId, int partySize, int partyCapacity);
+	void updateActivity(const char* actState, const char* actDetails, time_t startT, time_t endT, const char* smallImg, const char* largeImg, bool inviteAvailable);
 }
