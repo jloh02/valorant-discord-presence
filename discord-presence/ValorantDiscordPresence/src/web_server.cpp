@@ -13,6 +13,11 @@ namespace server {
 			rapidjson::Document reqDoc;
 			reqDoc.Parse(req.body.c_str());
 
+			if (!reqDoc.HasMember("party") || !reqDoc.HasMember("puuid")) {
+				res.status = 404;
+				return;
+			}
+
 			std::pair<int, std::string> r = valorant::invite::joinParty((reqDoc.FindMember("party")->value).GetString(), (reqDoc.FindMember("puuid")->value).GetString());
 			if (r.first != 200) {
 				if (r.second == "PARTY_NOT_FOUND")
