@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<?include Vars.wxi ?>
 	<Product Id="*" UpgradeCode="22121B7D-B16B-4566-B50D-BCBB8DE18913"
-            Name="$(var.ProductName)" Version="0.3.1" Manufacturer="$(var.ManufacturerName)" Language="1033">
+            Name="$(var.ProductName)" Version="0.3.2" Manufacturer="$(var.ManufacturerName)" Language="1033">
 		<Package InstallerVersion="200" Compressed="yes" Comments="Windows Installer for $(var.ProductName)"/>
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed."/>
@@ -36,7 +36,6 @@
 
 		<ComponentGroup Id="ApplicationFiles" Directory="INSTALLDIR">
 			<?include components\AppComponent.wxi ?>
-			<?include components\DiscordSdkComponent.wxi ?>
 			<?include components\LibCryptoComponent.wxi ?>
 			<?include components\LibSslComponent.wxi ?>
 		</ComponentGroup>
