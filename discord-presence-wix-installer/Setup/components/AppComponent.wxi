@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 	<Component Guid="*">
-		<File Source="$(var.ValorantDiscordPresence.TargetPath)"/>
+		<File Id="file00B23DC24B714A89AB2E0F065DAC" Source="$(var.ValorantDiscordPresence.TargetPath)"/>
 	</Component>
 </Include>

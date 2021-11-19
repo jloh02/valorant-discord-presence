@@ -17,6 +17,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <SuppressIces>ICE03</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.wxs" />
@@ -43,9 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="components\AppComponent.wxi" />
+    <Content Include="components\RegistryEntries.wxi" />
     <Content Include="components\StartMenuComponent.wxi" />
     <Content Include="components\LibSslComponent.wxi" />
-    <Content Include="components\DiscordSdkComponent.wxi" />
     <Content Include="components\LibCryptoComponent.wxi" />
     <Content Include="res\valo_banner.bmp" />
     <Content Include="Vars.wxi" />
