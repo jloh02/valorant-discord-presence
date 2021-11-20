@@ -35,8 +35,8 @@ IDI_ICON1               ICON                    "D:\\Users\\Jonathan\\Documents\
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,3,1,0
- PRODUCTVERSION 0,3,1,0
+ FILEVERSION 0,3,2,0
+ PRODUCTVERSION 0,3,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -53,9 +53,9 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "jloh02"
             VALUE "FileDescription", "Third-Party Discord Presence Plugin for Riot's FPS VALORANT"
-            VALUE "FileVersion", "0.3.1.0"
+            VALUE "FileVersion", "0.3.2.0"
             VALUE "ProductName", "VALORANT Discord Presence"
-            VALUE "ProductVersion", "0.3.1.0"
+            VALUE "ProductVersion", "0.3.2.0"
         END
     END
     BLOCK "VarFileInfo"
