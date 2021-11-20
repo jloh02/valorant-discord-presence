@@ -6,13 +6,14 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>97956ad1-022f-4b4c-b835-06eccfadf82b</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>Install VALORANT Discord Presence</OutputName>
+    <OutputName>Install-VALORANT-Discord-Presence</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
+    <SuppressIces>ICE03</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
