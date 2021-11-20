@@ -7,7 +7,7 @@ namespace {
 	std::wstring regCmd;
 }
 
-bool openExistingValorantApplication() { //returns true if already open
+DWORD getExistingExePID(std::string search) {
 	DWORD pid = 0;
 
 	// Create toolhelp snapshot
@@ -22,7 +22,7 @@ bool openExistingValorantApplication() { //returns true if already open
 		do
 		{
 			std::wstring ws(process.szExeFile);
-			if (std::string(ws.begin(), ws.end()) == std::string("VALORANT.exe"))
+			if (std::string(ws.begin(), ws.end()) == search)
 			{
 				pid = process.th32ProcessID;
 				break;
@@ -32,11 +32,18 @@ bool openExistingValorantApplication() { //returns true if already open
 
 	CloseHandle(snapshot);
 
+	return pid;
+}
+
+bool openExistingValorantApplication() { //returns true if already open
+	
+	DWORD pid = getExistingExePID("VALORANT.exe");
 	if (pid == 0) return false; //Process not found
 
 	valorantPHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	return true;
 }
+
 
 LONG getRiotClientPath(){
 	HKEY hKey;

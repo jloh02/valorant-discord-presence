@@ -179,14 +179,15 @@ namespace valorant {
 				{ "Authorization", credentials["bearerToken"]}
 			};
 
-			httplib::Params params;
-			params.emplace("Subjects", std::format("[\"{}\"]", ownerPuuid));
+			std::string bod = "{\"Subjects\":[\"";
+			bod.append(ownerPuuid);
+			bod.append("\"]}");
 
-			auto res = cli.Post(endpoint.c_str(), headers, params);
-
+			auto res = cli.Post(endpoint.c_str(), headers, bod, "application/json");
+			
 			rapidjson::Document resDoc;
 			resDoc.Parse(res->body.c_str());
-			return { res->status , (resDoc.FindMember("errorCode")->value).GetString() };
+			return { res->status , res->status==200?"Success":(resDoc.FindMember("errorCode")->value).GetString()};
 		}
 
 		std::pair<int, std::string> joinParty(std::string partyId, std::string ownerPuuid) {

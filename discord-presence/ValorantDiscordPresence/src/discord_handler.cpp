@@ -32,6 +32,7 @@ namespace disc {
 	static void handleDiscordError(int errcode, const char* message)
 	{
 		printf("\nDiscord: error (%d: %s)\n", errcode, message);
+		*interruptFlag = true;
 	}
 
 	void initialize(volatile bool* interrupt) {
@@ -42,7 +43,7 @@ namespace disc {
 		handlers.ready = handleDiscordReady;
 		handlers.disconnected = handleDiscordDisconnected;
 		handlers.errored = handleDiscordError;
-		Discord_Initialize(APPLICATION_ID, &handlers, 1, NULL);
+		Discord_Initialize(APPLICATION_ID, &handlers, false, NULL);
 
 		Discord_Register(APPLICATION_ID, valorantCmd.c_str());
 

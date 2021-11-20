@@ -10,8 +10,11 @@
 #include <fstream>
 #include <format>
 
+#include "httplib/httplib.h"
+
 inline std::string valorantCmd;
 
+DWORD getExistingExePID(std::string search);
 void startValorantApplication();
 bool isValorantClosed();
 void popup(const char* text);

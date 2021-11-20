@@ -35,6 +35,12 @@ int main()
 	}
 	
 	startValorantApplication();
+
+	if (!getExistingExePID("Discord.exe")) {
+		server::stop();
+		exit(0);
+	}
+
 	disc::initialize(&interrupted);
 	valorant::initialize();
 
