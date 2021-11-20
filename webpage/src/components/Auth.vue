@@ -2,7 +2,7 @@
   <div class="auth-box">
     <div v-if="success">
       <p class="completed-msg">
-        You have been invited to the party. You may now close this webpage.<br><br>If you would like to skip the login process, you may download the VALORANT Discord Presence <a href="https://github.com/jloh02/valorant-discord-presence/releases">here</a>.
+        You have requested to join the party. You may now close this webpage.<br><br>If you would like to skip the login process, you may download the VALORANT Discord Presence <a href="https://github.com/jloh02/valorant-discord-presence/releases">here</a>.
       </p>
     </div>
     <div v-else>
