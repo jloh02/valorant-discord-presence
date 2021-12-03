@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ValorantDiscordPresence", "ValorantDiscordPresence\ValorantDiscordPresence.vcxproj", "{934DE67B-F27D-467F-8F4B-75979E06C67D}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "..\discord-presence-wix-installer\Setup\Setup.wixproj", "{97956AD1-022F-4B4C-B835-06ECCFADF82B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Debug|x64.ActiveCfg = Debug|x64
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Debug|x64.Build.0 = Debug|x64
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Debug|x86.ActiveCfg = Debug|Win32
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Debug|x86.Build.0 = Debug|Win32
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Release|x64.ActiveCfg = Release|x64
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Release|x64.Build.0 = Release|x64
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Release|x86.ActiveCfg = Release|Win32
+		{934DE67B-F27D-467F-8F4B-75979E06C67D}.Release|x86.Build.0 = Release|Win32
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Debug|x64.ActiveCfg = Debug|x86
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Debug|x86.ActiveCfg = Debug|x86
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Debug|x86.Build.0 = Debug|x86
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Release|x64.ActiveCfg = Release|x86
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Release|x86.ActiveCfg = Release|x86
+		{97956AD1-022F-4B4C-B835-06ECCFADF82B}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19CDA3C6-0519-45E1-B106-B4E97C80F3CD}
+	EndGlobalSection
+EndGlobal

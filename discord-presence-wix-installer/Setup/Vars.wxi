@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<?define ProductName="VALORANT Discord Presence" ?>
+	<?define FolderName="ValorantDiscordPresence" ?>
+	<?define ManufacturerName="jloh02" ?>
+	<?define ProductVersion="!(bind.fileVersion.file00B23DC24B714A89AB2E0F065DAC)" ?>
+</Include>

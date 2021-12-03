@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<Component Guid="*">
+		<RegistryKey Root="HKCU"
+                     Key="SOFTWARE\$(var.ManufacturerName)\$(var.FolderName)"
+              Action="createAndRemoveOnUninstall">
+			<RegistryValue Type="string" Name="InstallLocation" Value="[INSTALLDIR]"/>
+		</RegistryKey>
+	</Component>
+</Include>
